@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+.maindiv{
+  border: 2px solid black;
+  width: fit-content;
+  padding: 20px;
+  margin: auto;
+}
+button{
+  margin-left: 10px;
+  font-size: 18px;
+  color: white;
+  background-color: rgb(36, 36, 68);
+  padding: 10px;
+  border-radius: 10px;
+}
+video{
+  height: 300px;
+}
+p{
+  font-size: 30px;
+}

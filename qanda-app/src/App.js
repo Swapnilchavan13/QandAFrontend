@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import './App.css';
 
 function App() {
   const [currentVideo, setCurrentVideo] = useState({});
-  const [response, setResponse] = useState({
-    Date_time: new Date(),
-    card_id: 'user_card_id', // Replace with actual card ID
-    option_selected: null,
-    image_name: null,
-    question_id: null,
-  });
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef();
 
   const fetchCurrentVideo = async () => {
     const response = await fetch('http://localhost:8001/api/current-video');
@@ -16,45 +13,146 @@ function App() {
     setCurrentVideo(data);
   };
 
-  useEffect(() => {
-    fetchCurrentVideo();
-  }, [response]);
-
-  const handleOptionClick = async (selectedOption) => {
-    // Use the callback function to get the latest state
-    setResponse(prevResponse => ({
-      ...prevResponse,
-      option_selected: selectedOption,
-      image_name: currentVideo.image,
-      question_id: currentVideo.question_id,
-    }));
-
-    // Send the response to the server
-    await fetch('http://localhost:8001/api/response', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(response), // Use the updated response state
-    });
-
-    // Fetch the next video after sending the response
-    await fetchCurrentVideo();
+  const handleNext = () => {
+    savePlaybackPosition();
+    fetch('http://localhost:8001/api/next-video')
+      .then(response => response.json())
+      .then(data => setCurrentVideo(data))
+      .catch(error => console.error('Error fetching next video', error));
   };
 
+  const handlePrevious = () => {
+    savePlaybackPosition();
+    fetch('http://localhost:8001/api/previous-video')
+      .then(response => response.json())
+      .then(data => setCurrentVideo(data))
+      .catch(error => console.error('Error fetching previous video', error));
+  };
+
+const handleTimeUpdate = () => {
+  const currentTime = videoRef.current.currentTime;
+  const duration = videoRef.current.duration;
+
+  setCurrentTime(currentTime <= duration ? currentTime : duration);
+};
+
+const getCurrentTime = () => {
+  const currentTime = videoRef.current.currentTime;
+  const duration = videoRef.current.duration;
+
+  const seekTime = currentVideo.currentTime;
+  const newTime = Math.min(seekTime, duration);
+
+  videoRef.current.currentTime = newTime <= duration ? newTime : duration;
+};
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+    window.parent.postMessage({ type: 'videoState', isPlaying: true }, '*');
+  };
+
+  const handlePause = () => {
+    setIsPlaying(false);
+    window.parent.postMessage({ type: 'videoState', isPlaying: false }, '*');
+    
+    fetch('http://localhost:8001/api/current-video')
+      .then(response => response.json())
+      .then(data => {
+        fetch('http://localhost:8001/api/update-video-state', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            video_id: data.video_id,
+            state: 'false',
+            currentTime: videoRef.current.currentTime,
+          }),
+        })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Video state updated successfully:', result);
+        })
+        .catch(error => {
+          console.error('Error updating video state:', error);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching current video:', error);
+      });
+  };
+
+  const savePlaybackPosition = () => {
+    if (currentVideo.video_id) {
+      localStorage.setItem(`video_${currentVideo.video_id}`, JSON.stringify({ currentTime, isPlaying }));
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentVideo();
+  }, [currentVideo.video_id]);
+
+ useEffect(() => {
+    const storedData = localStorage.getItem(`video_${currentVideo.video_id}`);
+    if (storedData) {
+      const { currentTime: storedTime, isPlaying: storedPlaying } = JSON.parse(storedData);
+      setCurrentTime(storedTime || 0);
+      setIsPlaying(storedPlaying || false);
+    } else {
+      setCurrentTime(0);
+      setIsPlaying(false);
+    }
+  }, [currentVideo.video_id]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.addEventListener('timeupdate', handleTimeUpdate);
+    }
+
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+      }
+    };
+  }, [videoRef]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (isPlaying) {
+        setCurrentTime(prevTime => prevTime + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [isPlaying]);
+  
   return (
-    <div>
+    <div className='maindiv'>
       <h1>Current Video</h1>
-      <p>Q. {currentVideo.video_id}</p>
-      <p>{currentVideo.question}</p>
-      {currentVideo.options &&
-        Object.entries(currentVideo.options).map(([key, value]) => (
-          <button key={key} onClick={() => handleOptionClick(value)}>
-            {value}
-          </button>
-        ))}
+      <video
+        ref={videoRef}
+        src={currentVideo.video}
+        controls
+        onPlay={handlePlay}
+        onPause={handlePause}
+        onEnded={handleNext}
+      />
+      <div>
+        <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p>
+        <button onClick={getCurrentTime}>Get Current Time</button>
+      </div>
+
+      <button onClick={handlePrevious}>Previous Video</button>
+      <button onClick={handleNext}>Next Video</button>
     </div>
   );
 }
+
+const formatTime = seconds => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+};
+
 
 export default App;
