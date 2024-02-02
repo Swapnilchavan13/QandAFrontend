@@ -6,6 +6,8 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef();
+  const currentTimeButtonRef = useRef(null);
+
 
   const fetchCurrentVideo = async () => {
     const response = await fetch('http://localhost:8001/api/current-video');
@@ -20,7 +22,9 @@ const handleNext = () => {
     .then(response => response.json())
     .then(data => {
       setCurrentVideo(data);
-      setTimeout(getCurrentTime, 2000); // Call getCurrentTime after 2 seconds
+      setTimeout(() => {
+        currentTimeButtonRef.current.click();
+      }, 2000);
     })
     .catch(error => console.error('Error fetching next video', error));
 };
@@ -31,7 +35,9 @@ const handlePrevious = () => {
     .then(response => response.json())
     .then(data => {
       setCurrentVideo(data);
-      setTimeout(getCurrentTime, 2000); // Call getCurrentTime after 2 seconds
+      setTimeout(() => {
+        currentTimeButtonRef.current.click();
+      }, 2000);
     })
     .catch(error => console.error('Error fetching previous video', error));
 };
@@ -138,7 +144,8 @@ const getCurrentTime = () => {
       />
       <div>
         <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p>
-        <button onClick={getCurrentTime}>Get Current Time</button>
+        <button ref={currentTimeButtonRef} onClick={getCurrentTime}> Get Current Time </button>
+
       </div>
 
       <button onClick={handlePrevious}>Previous Video</button>
