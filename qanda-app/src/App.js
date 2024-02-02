@@ -13,21 +13,29 @@ function App() {
     setCurrentVideo(data);
   };
 
-  const handleNext = () => {
-    savePlaybackPosition();
-    fetch('http://localhost:8001/api/next-video')
-      .then(response => response.json())
-      .then(data => setCurrentVideo(data))
-      .catch(error => console.error('Error fetching next video', error));
-  };
 
-  const handlePrevious = () => {
-    savePlaybackPosition();
-    fetch('http://localhost:8001/api/previous-video')
-      .then(response => response.json())
-      .then(data => setCurrentVideo(data))
-      .catch(error => console.error('Error fetching previous video', error));
-  };
+const handleNext = () => {
+  savePlaybackPosition();
+  fetch('http://localhost:8001/api/next-video')
+    .then(response => response.json())
+    .then(data => {
+      setCurrentVideo(data);
+      setTimeout(getCurrentTime, 2000); // Call getCurrentTime after 2 seconds
+    })
+    .catch(error => console.error('Error fetching next video', error));
+};
+
+const handlePrevious = () => {
+  savePlaybackPosition();
+  fetch('http://localhost:8001/api/previous-video')
+    .then(response => response.json())
+    .then(data => {
+      setCurrentVideo(data);
+      setTimeout(getCurrentTime, 2000); // Call getCurrentTime after 2 seconds
+    })
+    .catch(error => console.error('Error fetching previous video', error));
+};
+
 
 const handleTimeUpdate = () => {
   const currentTime = videoRef.current.currentTime;
@@ -116,16 +124,7 @@ const getCurrentTime = () => {
     };
   }, [videoRef]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (isPlaying) {
-        setCurrentTime(prevTime => prevTime + 1);
-      }
-    }, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [isPlaying]);
-  
   return (
     <div className='maindiv'>
       <h1>Current Video</h1>
@@ -153,6 +152,5 @@ const formatTime = seconds => {
   const remainingSeconds = seconds % 60;
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 };
-
 
 export default App;
