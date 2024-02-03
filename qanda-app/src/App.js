@@ -20,9 +20,9 @@ const handleNext = () => {
     .then(response => response.json())
     .then(data => {
       setCurrentVideo(data);
-      setTimeout(() => {
-        currentTimeButtonRef.current.click();
-      }, 2000);
+      // setTimeout(() => {
+      //   currentTimeButtonRef.current.click();
+      // }, 2000);
     })
     .catch(error => console.error('Error fetching next video', error));
 };
@@ -33,9 +33,9 @@ const handlePrevious = () => {
     .then(response => response.json())
     .then(data => {
       setCurrentVideo(data);
-      setTimeout(() => {
-        currentTimeButtonRef.current.click();
-      }, 2000);
+      // setTimeout(() => {
+      //   currentTimeButtonRef.current.click();
+      // }, 2000);
     })
     .catch(error => console.error('Error fetching previous video', error));
 };
@@ -48,15 +48,15 @@ const handleTimeUpdate = () => {
   setCurrentTime(currentTime <= duration ? currentTime : duration);
 };
 
-const getCurrentTime = () => {
-  const currentTime = videoRef.current.currentTime;
-  const duration = videoRef.current.duration;
+// const getCurrentTime = () => {
+//   const currentTime = videoRef.current.currentTime;
+//   const duration = videoRef.current.duration;
 
-  const seekTime = currentVideo.currentTime;
-  const newTime = Math.min(seekTime, duration);
+//   const seekTime = currentVideo.currentTime;
+//   const newTime = Math.min(seekTime, duration);
 
-  videoRef.current.currentTime = newTime <= duration ? newTime : duration;
-};
+//   videoRef.current.currentTime = newTime <= duration ? newTime : duration;
+// };
 
   const handlePlay = () => {
     setIsPlaying(true);
@@ -140,8 +140,8 @@ const getCurrentTime = () => {
         onEnded={handleNext}
       />
       <div>
-        <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p>
-        <button ref={currentTimeButtonRef} onClick={getCurrentTime}> Get Current Time </button>
+        {/* <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p> */}
+        {/* <button ref={currentTimeButtonRef} onClick={getCurrentTime}> Get Current Time </button> */}
       </div>
 
       <button onClick={handlePrevious}>Previous Video</button>
@@ -150,12 +150,10 @@ const getCurrentTime = () => {
   );
 }
 
-
-
-const formatTime = seconds => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-};
+// const formatTime = seconds => {
+//   const minutes = Math.floor(seconds / 60);
+//   const remainingSeconds = seconds % 60;
+//   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+// };
 
 export default App;
