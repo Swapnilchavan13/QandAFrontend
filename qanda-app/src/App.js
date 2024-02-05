@@ -12,7 +12,7 @@ function App() {
 
   const fetchAllVideos = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/all-videos');
+      const response = await fetch('http://62.72.59.146:8002/api/all-videos');
       const data = await response.json();
       setVideos(data);
     } catch (error) {
@@ -22,7 +22,7 @@ function App() {
   
   const fetchCurrentVideo = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/current-video');
+      const response = await fetch('http://62.72.59.146:8002/api/current-video');
       const data = await response.json();
       setCurrentTime(data.currentTime);
       setIsPlaying(data.state === 'true');
@@ -45,11 +45,13 @@ function App() {
       }
 
       savePlaybackPosition();
-
+      
       setTimeout(() => {
-        currentTimeButtonRef.current.click();
-      }, 2000);
+
+      }, 1000);
     }
+
+   
   };
 
   const handleTimeUpdate = () => {
@@ -71,10 +73,10 @@ function App() {
 
   const handlePause = () => {
     setIsPlaying(false);
-    fetch('http://localhost:8002/api/current-video')
+    fetch('http://62.72.59.146:8002/api/current-video')
       .then(response => response.json())
       .then(data => {
-        fetch('http://localhost:8002/api/update-video-state', {
+        fetch('http://62.72.59.146:8002/api/update-video-state', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -91,13 +93,13 @@ function App() {
         })
         .catch(error => {
           console.error('Error updating video state:', error);
+
         });
       })
       .catch(error => {
         console.error('Error fetching current video:', error);
       });
   };
-
   const savePlaybackPosition = () => {
     if (currentVideoIndex !== undefined && videos[currentVideoIndex]) {
       localStorage.setItem(`video_${videos[currentVideoIndex].video_id}`, JSON.stringify({ currentTime, isPlaying }));
@@ -106,7 +108,7 @@ function App() {
 
   useEffect(() => {
     fetchAllVideos();
-  }, []);
+  }, [currentVideoIndex]);
 
   useEffect(() => {
     fetchCurrentVideo();
@@ -157,8 +159,8 @@ function App() {
   </button>
 ))}
 
-      </div>
-
+    </div>
+      
       {/* <button onClick={handlePrevious}>Previous Video</button> */}
       {/* <button onClick={handleNext}>Next Video</button> */}
 
