@@ -91,13 +91,13 @@ function App() {
         })
         .catch(error => {
           console.error('Error updating video state:', error);
+
         });
       })
       .catch(error => {
         console.error('Error fetching current video:', error);
       });
   };
-
   const savePlaybackPosition = () => {
     if (currentVideoIndex !== undefined && videos[currentVideoIndex]) {
       localStorage.setItem(`video_${videos[currentVideoIndex].video_id}`, JSON.stringify({ currentTime, isPlaying }));
