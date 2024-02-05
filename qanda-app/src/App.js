@@ -12,7 +12,7 @@ function App() {
 
   const fetchAllVideos = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/all-videos');
+      const response = await fetch('http://62.72.59.146:8002/api/all-videos');
       const data = await response.json();
       setVideos(data);
     } catch (error) {
@@ -22,7 +22,7 @@ function App() {
   
   const fetchCurrentVideo = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/current-video');
+      const response = await fetch('http://62.72.59.146:8002/api/current-video');
       const data = await response.json();
       setCurrentTime(data.currentTime);
       setIsPlaying(data.state === 'true');
@@ -71,10 +71,10 @@ function App() {
 
   const handlePause = () => {
     setIsPlaying(false);
-    fetch('http://localhost:8002/api/current-video')
+    fetch('http://62.72.59.146:8002/api/current-video')
       .then(response => response.json())
       .then(data => {
-        fetch('http://localhost:8002/api/update-video-state', {
+        fetch('http://62.72.59.146:8002/api/update-video-state', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
