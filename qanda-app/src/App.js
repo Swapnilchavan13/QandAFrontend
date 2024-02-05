@@ -1,82 +1,86 @@
+// App.js
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 function App() {
-  const [currentVideo, setCurrentVideo] = useState({});
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef();
   const currentTimeButtonRef = useRef(null);
 
+  const fetchAllVideos = async () => {
+    try {
+      const response = await fetch('http://localhost:8002/api/all-videos');
+      const data = await response.json();
+      setVideos(data);
+    } catch (error) {
+      console.error('Error fetching all videos', error);
+    }
+  };
+  
   const fetchCurrentVideo = async () => {
-    const response = await fetch('http://62.72.59.146:8002/api/current-video');
-    const data = await response.json();
-    setCurrentVideo(data);
+    try {
+      const response = await fetch('http://localhost:8002/api/current-video');
+      const data = await response.json();
+      setCurrentTime(data.currentTime);
+      setIsPlaying(data.state === 'true');
+    } catch (error) {
+      console.error('Error fetching current video', error);
+    }
+  };
+  const handleVideoChange = (videoId) => {
+    const newIndex = videos.findIndex(video => video.video_id === videoId);
+    if (newIndex !== -1) {
+      setCurrentVideoIndex(newIndex);
+      setIsPlaying(false);
+
+      const currentVideo = videos[newIndex];
+      setCurrentTime(currentVideo?.currentTime || 0);
+
+      // Update video pointer
+      if (videoRef.current) {
+        videoRef.current.currentTime = currentVideo?.currentTime || 0;
+      }
+
+      savePlaybackPosition();
+
+      setTimeout(() => {
+        currentTimeButtonRef.current.click();
+      }, 2000);
+    }
   };
 
-const handleNext = () => {
-  savePlaybackPosition();
-  fetch('http://62.72.59.146:8002/api/next-video')
-    .then(response => response.json())
-    .then(data => {
-      setCurrentVideo(data);
-      // setTimeout(() => {
-      //   currentTimeButtonRef.current.click();
-      // }, 2000);
-    })
-    .catch(error => console.error('Error fetching next video', error));
-};
+  const handleTimeUpdate = () => {
+    const currentTime = videoRef.current.currentTime;
+    const duration = videoRef.current.duration;
+    setCurrentTime(currentTime <= duration ? currentTime : duration);
+  };
 
-const handlePrevious = () => {
-  savePlaybackPosition();
-  fetch('http://62.72.59.146:8002/api/previous-video')
-    .then(response => response.json())
-    .then(data => {
-      setCurrentVideo(data);
-      // setTimeout(() => {
-      //   currentTimeButtonRef.current.click();
-      // }, 2000);
-    })
-    .catch(error => console.error('Error fetching previous video', error));
-};
-
-
-const handleTimeUpdate = () => {
-  const currentTime = videoRef.current.currentTime;
-  const duration = videoRef.current.duration;
-
-  setCurrentTime(currentTime <= duration ? currentTime : duration);
-};
-
-// const getCurrentTime = () => {
-//   const currentTime = videoRef.current.currentTime;
-//   const duration = videoRef.current.duration;
-
-//   const seekTime = currentVideo.currentTime;
-//   const newTime = Math.min(seekTime, duration);
-
-//   videoRef.current.currentTime = newTime <= duration ? newTime : duration;
-// };
+  const getCurrentTime = () => {
+    const currentVideo = videos.find(video => video.video_id === currentVideoIndex + 1);
+    if (currentVideo) {
+      setCurrentTime(currentVideo.currentTime);
+    }
+  };
 
   const handlePlay = () => {
     setIsPlaying(true);
-    window.parent.postMessage({ type: 'videoState', isPlaying: true }, '*');
   };
 
   const handlePause = () => {
     setIsPlaying(false);
-    window.parent.postMessage({ type: 'videoState', isPlaying: false }, '*');
-    
-    fetch('http://62.72.59.146:8002/api/current-video')
+    fetch('http://localhost:8002/api/current-video')
       .then(response => response.json())
       .then(data => {
-        fetch('http://62.72.59.146:8002/api/update-video-state', {
+        fetch('http://localhost:8002/api/update-video-state', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            video_id: data.video_id,
+            video_id: videos[currentVideoIndex]?.video_id,
             state: 'false',
             currentTime: videoRef.current.currentTime,
           }),
@@ -95,26 +99,18 @@ const handleTimeUpdate = () => {
   };
 
   const savePlaybackPosition = () => {
-    if (currentVideo.video_id) {
-      localStorage.setItem(`video_${currentVideo.video_id}`, JSON.stringify({ currentTime, isPlaying }));
+    if (currentVideoIndex !== undefined && videos[currentVideoIndex]) {
+      localStorage.setItem(`video_${videos[currentVideoIndex].video_id}`, JSON.stringify({ currentTime, isPlaying }));
     }
   };
 
   useEffect(() => {
-    fetchCurrentVideo();
-  }, [currentVideo.video_id]);
+    fetchAllVideos();
+  }, []);
 
- useEffect(() => {
-    const storedData = localStorage.getItem(`video_${currentVideo.video_id}`);
-    if (storedData) {
-      const { currentTime: storedTime, isPlaying: storedPlaying } = JSON.parse(storedData);
-      setCurrentTime(storedTime || 0);
-      setIsPlaying(storedPlaying || false);
-    } else {
-      setCurrentTime(0);
-      setIsPlaying(false);
-    }
-  }, [currentVideo.video_id]);
+  useEffect(() => {
+    fetchCurrentVideo();
+  }, [currentVideoIndex]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -128,32 +124,52 @@ const handleTimeUpdate = () => {
     };
   }, [videoRef]);
 
+  // Additional useEffect to handle initial setup
+  useEffect(() => {
+    if (videos.length > 0) {
+      setCurrentTime(videos[currentVideoIndex]?.currentTime || 0);
+    }
+  }, [videos, currentVideoIndex]);
+
   return (
     <div className='maindiv'>
+      <h1>All Videos</h1>
+
       <h1>Current Video</h1>
       <video
         ref={videoRef}
-        src={currentVideo.video}
+        src={videos[currentVideoIndex]?.video}
         controls
         onPlay={handlePlay}
         onPause={handlePause}
-        onEnded={handleNext}
       />
       <div>
-        {/* <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p> */}
-        {/* <button ref={currentTimeButtonRef} onClick={getCurrentTime}> Get Current Time </button> */}
+      <div>
+        <p>Elapsed Time: {formatTime(Math.floor(currentTime))}</p>
+        <button style={{display:"none"}} ref={currentTimeButtonRef} onClick={getCurrentTime}>
+          Get Current Time
+        </button>
       </div>
+      
+      {videos.map((video) => (
+  <button key={video.video_id} onClick={() => handleVideoChange(video.video_id)}>
+    {video.video_id} Video
+  </button>
+))}
 
-      <button onClick={handlePrevious}>Previous Video</button>
-      <button onClick={handleNext}>Next Video</button>
+      </div>
+      
+      {/* <button onClick={handlePrevious}>Previous Video</button> */}
+      {/* <button onClick={handleNext}>Next Video</button> */}
+
     </div>
   );
 }
 
-// const formatTime = seconds => {
-//   const minutes = Math.floor(seconds / 60);
-//   const remainingSeconds = seconds % 60;
-//   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-// };
+const formatTime = seconds => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+};
 
 export default App;
