@@ -12,7 +12,7 @@ function App() {
 
   const fetchAllVideos = async () => {
     try {
-      const response = await fetch('http://62.72.59.146:8002/api/all-videos');
+      const response = await fetch('http://localhost:8002/api/all-videos');
       const data = await response.json();
       setVideos(data);
     } catch (error) {
@@ -20,16 +20,7 @@ function App() {
     }
   };
   
-  const fetchCurrentVideo = async () => {
-    try {
-      const response = await fetch('http://62.72.59.146:8002/api/current-video');
-      const data = await response.json();
-      setCurrentTime(data.currentTime);
-      setIsPlaying(data.state === 'true');
-    } catch (error) {
-      console.error('Error fetching current video', error);
-    }
-  };
+  
   const handleVideoChange = (videoId) => {
     const newIndex = videos.findIndex(video => video.video_id === videoId);
     if (newIndex !== -1) {
@@ -45,13 +36,7 @@ function App() {
       }
 
       savePlaybackPosition();
-      
-      setTimeout(() => {
-
-      }, 1000);
     }
-
-   
   };
 
   const handleTimeUpdate = () => {
@@ -73,10 +58,10 @@ function App() {
 
   const handlePause = () => {
     setIsPlaying(false);
-    fetch('http://62.72.59.146:8002/api/current-video')
+    fetch('http://localhost:8002/api/current-video')
       .then(response => response.json())
       .then(data => {
-        fetch('http://62.72.59.146:8002/api/update-video-state', {
+        fetch('http://localhost:8002/api/update-video-state', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -110,9 +95,6 @@ function App() {
     fetchAllVideos();
   }, [currentVideoIndex]);
 
-  useEffect(() => {
-    fetchCurrentVideo();
-  }, [currentVideoIndex]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -160,10 +142,6 @@ function App() {
 ))}
 
     </div>
-      
-      {/* <button onClick={handlePrevious}>Previous Video</button> */}
-      {/* <button onClick={handleNext}>Next Video</button> */}
-
     </div>
   );
 }
