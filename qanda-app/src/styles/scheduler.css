@@ -1,17 +1,18 @@
 /* scheduler.css */
 
 .scheduler-wrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   justify-content: space-between;
 }
 
 .scheduler-container {
-  width: 30%; /* Adjust as needed */
+  width: 85%; /* Adjust as needed */
   padding: 20px;
   margin: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(46, 25, 25, 0.1);
 }
 
 h2 {
@@ -39,5 +40,6 @@ select {
   border-radius: 4px;
 }
 
-
-/* Add any additional styling as per your design preferences */
+.selecttag{
+  width: 20%;
+}

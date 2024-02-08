@@ -5,9 +5,11 @@ import '../styles/scheduler.css'; // Ensure the correct path to your CSS file
 
 export const Scheduler = () => {
   const [videos, setVideos] = useState([]);
-  const [selectedSchedules, setSelectedSchedules] = useState(Array(3).fill(Array(15).fill('')).map(innerArray => [...innerArray]));
+  const [selectedSchedules, setSelectedSchedules] = useState(Array(30).fill(Array(15).fill('')).map(innerArray => [...innerArray]));
   const [startDates, setStartDates] = useState([]);
   const [errors, setErrors] = useState(Array(3).fill(null));
+  const [alldata, setAlldata] = useState([]);
+  const [schedulerCount, setSchedulerCount] = useState(3); // State to control the number of schedulers
   const slotLimit = 60; // Slot limit in minutes
 
   useEffect(() => {
@@ -20,17 +22,16 @@ export const Scheduler = () => {
       .catch(error => {
         console.error('Error fetching videos:', error);
       });
-  
+
     // Set start dates for the next three days
     const currentDate = new Date();
-    const nextDates = Array(3).fill().map((_, index) => {
+    const nextDates = Array(schedulerCount).fill().map((_, index) => {
       const nextDate = new Date(currentDate);
       nextDate.setDate(currentDate.getDate() + index);
       return nextDate;
     });
     setStartDates(nextDates);
-  }, []);
-  
+  }, [schedulerCount]); // Include schedulerCount in the dependency array
 
   const handleVideoChange = (schedulerIndex, slotIndex, videoID) => {
     const updatedSchedules = [...selectedSchedules];
@@ -78,7 +79,8 @@ export const Scheduler = () => {
       selectedVideos: selectedSchedules[schedulerIndex],
       errors: errors[schedulerIndex],
     };
-    console.log(`Scheduler ${schedulerIndex + 1} Data:`, schedulerData);
+
+    setAlldata(schedulerData);
   };
 
   const renderDropdowns = (startDate, schedulerIndex) => {
@@ -116,9 +118,29 @@ export const Scheduler = () => {
     ));
   };
 
+  const renderDropdown = () => {
+    return (
+      <div>
+        <label>Number of Schedulers:</label>
+        <select
+        className='selecttag'
+          value={schedulerCount}
+          onChange={(e) => setSchedulerCount(parseInt(e.target.value, 10))}
+        >
+          {[3, 7, 15, 30].map((count) => (
+            <option key={count} value={count}>
+              {count}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
+
   return (
     <>
       <h1>Video Scheduler</h1>
+      {renderDropdown()}
       <div className="scheduler-wrapper">
         {renderSchedulers()}
       </div>
