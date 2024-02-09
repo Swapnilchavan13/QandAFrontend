@@ -64,6 +64,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { Scheduler } from './component/Scheduler';
+import { Theateroperator } from './component/Theateroperator';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -215,8 +216,10 @@ function App() {
 
  
   return (
-
-    <Scheduler />
+<>
+<Scheduler />
+{/* <Theateroperator /> */}
+</>
 
 //     <div className='maindiv'>
 //       <h1>All Videos</h1>

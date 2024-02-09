@@ -12,12 +12,22 @@ export const Scheduler = () => {
   const [schedulerCount, setSchedulerCount] = useState(3); // State to control the number of schedulers
   const slotLimit = 60; // Slot limit in minutes
 
+  const [theaters, setTheaters] = useState([
+    { theater_id: 1, theater_name: 'Theater A' },
+    { theater_id: 2, theater_name: 'Theater B' },
+    { theater_id: 3, theater_name: 'Theater C' },
+    { theater_id: 4, theater_name: 'Theater D' },
+
+  ]);
+
+  const [selectedTheater, setSelectedTheater] = useState('');
+
   useEffect(() => {
     // Fetch videos from the backend API using fetch
-    fetch('http://192.168.0.113:8010/allVideos')
+    fetch('http://localhost:8002/api/allVideos')
       .then(response => response.json())
       .then(data => {
-        setVideos(data.videos);
+        setVideos(data);
       })
       .catch(error => {
         console.error('Error fetching videos:', error);
@@ -93,8 +103,8 @@ export const Scheduler = () => {
         >
           <option value="" disabled>Select a video</option>
           {getAvailableOptions(schedulerIndex, slotIndex).map(video => (
-            <option key={video.videoID} value={video.videoID}>
-              {video.videoURL}
+            <option key={video.video_id} value={video.video_id}>
+              {video.video}
             </option>
           ))}
         </select>
@@ -121,6 +131,20 @@ export const Scheduler = () => {
   const renderDropdown = () => {
     return (
       <div>
+         <label>Theater Name:</label>
+        <select
+          className='selecttag'
+          value={selectedTheater}
+          onChange={(e) => setSelectedTheater(e.target.value)}
+        >
+          <option value="" disabled>Select a theater</option>
+          {theaters.map(theater => (
+            <option key={theater.theater_id} value={theater.theater_id}>
+              {theater.theater_name}
+            </option>
+          ))}
+        </select>
+
         <label>Number of Schedulers:</label>
         <select
         className='selecttag'
@@ -139,7 +163,7 @@ export const Scheduler = () => {
 
   return (
     <>
-      <h1>Video Scheduler</h1>
+      <h1>Scheduling Content</h1>
       {renderDropdown()}
       <div className="scheduler-wrapper">
         {renderSchedulers()}
