@@ -1,5 +1,4 @@
 // Scheduler.js
-
 import React, { useState, useEffect } from 'react';
 import '../styles/scheduler.css'; // Ensure the correct path to your CSS file
 
@@ -83,16 +82,49 @@ export const Scheduler = () => {
     return videos.filter(video => !selectedIds.includes(video));
   };
 
-  const handleSaveClick = (schedulerIndex) => {
+  const handleSaveClick = async (schedulerIndex) => {
     const schedulerData = {
-      startDate: startDates[schedulerIndex],
-      selectedVideos: selectedSchedules[schedulerIndex],
+      theater_id: selectedTheater,
+    start_date: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
+    scheduler_index: schedulerIndex + 1,
+      video_1_link : selectedSchedules[schedulerIndex][0] || null,
+      video_2_link : selectedSchedules[schedulerIndex][1] || null,
+      video_3_link : selectedSchedules[schedulerIndex][2] || null,
+      video_4_link : selectedSchedules[schedulerIndex][3] || null,
+      video_5_link : selectedSchedules[schedulerIndex][4] || null,
+      video_6_link : selectedSchedules[schedulerIndex][5] || null,
+      video_7_link : selectedSchedules[schedulerIndex][6] || null,
+      video_8_link : selectedSchedules[schedulerIndex][7] || null,
+      video_9_link : selectedSchedules[schedulerIndex][8] || null,
+      video_10_link : selectedSchedules[schedulerIndex][9] || null,
+      video_11_link : selectedSchedules[schedulerIndex][10] || null,
+      video_12_link : selectedSchedules[schedulerIndex][11] || null,
+      video_13_link : selectedSchedules[schedulerIndex][12] || null,
+      video_14_link : selectedSchedules[schedulerIndex][13] || null,
+      video_15_link : selectedSchedules[schedulerIndex][14] || null,
       errors: errors[schedulerIndex],
     };
-
-    setAlldata(schedulerData);
+  
+    try {
+      const response = await fetch('http://localhost:8002/api/saveSchedulerData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(schedulerData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Data saved successfully:', data);
+      } else {
+        console.error('Error saving data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
   };
-
+  
   const renderDropdowns = (startDate, schedulerIndex) => {
     return Array(15).fill().map((_, slotIndex) => (
       <div key={slotIndex} className="dropdown-container">
@@ -100,10 +132,11 @@ export const Scheduler = () => {
         <select
           value={selectedSchedules[schedulerIndex][slotIndex]}
           onChange={(e) => handleVideoChange(schedulerIndex, slotIndex, e.target.value)}
+
         >
           <option value="" disabled>Select a video</option>
           {getAvailableOptions(schedulerIndex, slotIndex).map(video => (
-            <option key={video.video_id} value={video.video_id}>
+            <option key={video.video_id} value={video.video}>
               {video.video}
             </option>
           ))}

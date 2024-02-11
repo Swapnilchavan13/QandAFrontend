@@ -217,8 +217,8 @@ function App() {
  
   return (
 <>
-<Scheduler />
-{/* <Theateroperator /> */}
+{/* <Scheduler /> */}
+<Theateroperator />
 </>
 
 //     <div className='maindiv'>
