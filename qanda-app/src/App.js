@@ -63,8 +63,11 @@
 // App.js
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Scheduler } from './component/Scheduler';
 import { Theateroperator } from './component/Theateroperator';
+import { Addvideodata } from './component/Addvideodata';
+import { Navbar } from './component/Navbar';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -218,7 +221,15 @@ function App() {
   return (
 <>
 {/* <Scheduler /> */}
-<Theateroperator />
+
+<BrowserRouter>
+<Navbar />
+      <Routes>
+          <Route path="addvideodata" element={<Addvideodata />} />   
+          <Route path="scheduler" element={<Scheduler />} />
+          <Route path="theateroperator" element={<Theateroperator />} />
+      </Routes>
+    </BrowserRouter>
 </>
 
 //     <div className='maindiv'>

@@ -59,6 +59,11 @@ export const Theateroperator = () => {
                   <a href={scheduler[key]} target="_blank" rel="noopener noreferrer">
                     {`${key.replace('_link', '')}: View Video`}
                   </a>
+                  <br />
+                  {/* <video width="200" controls autoPlay="false">
+                <source src={scheduler[key]} type="video/mp4"/>
+            </video> */}
+                  
                 </li>
               );
             }
@@ -86,9 +91,9 @@ export const Theateroperator = () => {
 
   return (
     <>
-      <h1>Scheduler Playlist</h1>
+      <h1>Operator Playlist</h1>
 
-      <div>
+      <div className='selectt'>
         <label>Select Theater:</label>
         <select
           value={selectedTheater}

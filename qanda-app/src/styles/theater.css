@@ -45,6 +45,10 @@
   select {
     padding: 8px;
   }
+
+  .selectt{
+    width: 400px;
+  }
   
   /* Add more styles as needed */
   
