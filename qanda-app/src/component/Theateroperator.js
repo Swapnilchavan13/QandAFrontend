@@ -18,18 +18,19 @@ export const Theateroperator = () => {
   }, []);
 
   const handlePlayButtonClick = (scheduler) => {
-    if (scheduler.selected_videos && Array.isArray(scheduler.selected_videos)) {
-      scheduler.selected_videos.forEach(videoId => {
-        const videoInfo = getVideoInfo(videoId);
-        if (videoInfo) {
-          console.log('Playing video:', videoInfo.video);
-          playVideo(videoInfo.video);
-        }
-      });
-    } else {
-      console.error('No selected videos available for this scheduler.');
-    }
+    // Extract video links from the scheduler
+    const videoLinks = Object.keys(scheduler)
+      .filter(key => key.includes('_link') && scheduler[key])
+      .map(key => scheduler[key]);
+  
+    // Save video links to localStorage
+    localStorage.setItem('videoLinks', JSON.stringify(videoLinks));
+  
+    // Redirect to the video player page
+    window.location.href = 'video-player'; // Change the path as needed
   };
+  
+  
 
   const playVideo = (videoUrl) => {
     console.log('Opening video:', videoUrl);
@@ -42,12 +43,12 @@ export const Theateroperator = () => {
     if (!Array.isArray(schedulerData) || schedulerData.length === 0) {
       return <p>No scheduler data available.</p>;
     }
-
+  
     // Filter schedulerData based on the selected theater
     const filteredSchedulerData = selectedTheater
       ? schedulerData.filter(scheduler => scheduler.theater_id === parseInt(selectedTheater, 10))
       : schedulerData;
-
+  
     return filteredSchedulerData.map(scheduler => (
       <div key={scheduler.id} className="scheduler-playlist-item">
         <h3>{`Scheduler ${scheduler.scheduler_index} - ${new Date(scheduler.start_date).toDateString()}`}</h3>
@@ -60,10 +61,6 @@ export const Theateroperator = () => {
                     {`${key.replace('_link', '')}: View Video`}
                   </a>
                   <br />
-                  {/* <video width="200" controls autoPlay="false">
-                <source src={scheduler[key]} type="video/mp4"/>
-            </video> */}
-                  
                 </li>
               );
             }
@@ -74,6 +71,7 @@ export const Theateroperator = () => {
       </div>
     ));
   };
+  
 
   const getVideoInfo = (videoId) => {
     // Placeholder function, replace this with actual implementation

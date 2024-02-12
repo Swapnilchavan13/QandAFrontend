@@ -68,6 +68,7 @@ import { Scheduler } from './component/Scheduler';
 import { Theateroperator } from './component/Theateroperator';
 import { Addvideodata } from './component/Addvideodata';
 import { Navbar } from './component/Navbar';
+import { VideoPlayer } from './component/VideoPlayer';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -176,13 +177,15 @@ function App() {
   const savePlaybackPosition = () => {
     if (currentVideoIndex !== undefined && videos[currentVideoIndex]) {
       localStorage.setItem(`video_${videos[currentVideoIndex].video_id}`, JSON.stringify({ currentTime, isPlaying }));
+
+
+
     }
   };
 
   useEffect(() => {
     fetchAllVideos();
   }, [currentVideoIndex]);
-
   useEffect(() => {
     var numberr = parseInt(currentVideoIndex+1);
     fetchCurrentVideo(numberr);
@@ -228,6 +231,8 @@ function App() {
           <Route path="addvideodata" element={<Addvideodata />} />   
           <Route path="scheduler" element={<Scheduler />} />
           <Route path="theateroperator" element={<Theateroperator />} />
+          <Route path="video-player" element={<VideoPlayer />} />
+
       </Routes>
     </BrowserRouter>
 </>

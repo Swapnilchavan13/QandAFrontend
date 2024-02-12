@@ -7,7 +7,6 @@ export const Scheduler = () => {
   const [selectedSchedules, setSelectedSchedules] = useState(Array(30).fill(Array(15).fill('')).map(innerArray => [...innerArray]));
   const [startDates, setStartDates] = useState([]);
   const [errors, setErrors] = useState(Array(3).fill(null));
-  const [alldata, setAlldata] = useState([]);
   const [schedulerCount, setSchedulerCount] = useState(3); // State to control the number of schedulers
   const slotLimit = 60; // Slot limit in minutes
 
