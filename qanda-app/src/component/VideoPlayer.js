@@ -12,6 +12,8 @@ export const VideoPlayer = () => {
     if (storedVideoLinks && storedVideoLinks.length > 0) {
       setVideoLinks(storedVideoLinks);
     }
+  console.log(storedVideoLinks)
+
   }, []);
 
   useEffect(() => {
@@ -28,6 +30,8 @@ export const VideoPlayer = () => {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     }
   };
+
+  console.log(videoLinks)
 
   return (
     <div>

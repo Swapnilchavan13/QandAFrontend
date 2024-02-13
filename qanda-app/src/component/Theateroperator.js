@@ -8,7 +8,7 @@ export const Theateroperator = () => {
 
   useEffect(() => {
     // Fetch scheduler data from the backend API using axios
-    axios.get('http://localhost:8002/api/allSchedulerData')
+    axios.get('http://localhost:8010/api/allSchedulerData')
       .then(response => {
         setSchedulerData(response.data);
       })
@@ -17,27 +17,29 @@ export const Theateroperator = () => {
       });
   }, []);
 
+
+  console.log(schedulerData)
+  
   const handlePlayButtonClick = (scheduler) => {
     // Extract video links from the scheduler
-    const videoLinks = Object.keys(scheduler)
-      .filter(key => key.includes('_link') && scheduler[key])
-      .map(key => scheduler[key]);
+    const validVideoLinks = scheduler.video_links
+      .filter(videoLink => videoLink && Object.values(videoLink)[0])
+      .map(videoLink => Object.values(videoLink)[0]);
   
-    // Save video links to localStorage
-    localStorage.setItem('videoLinks', JSON.stringify(videoLinks));
+    // Save valid video links to localStorage
+    localStorage.setItem('videoLinks', JSON.stringify(validVideoLinks));
   
     // Redirect to the video player page
     window.location.href = 'video-player'; // Change the path as needed
   };
   
-  
-
   const playVideo = (videoUrl) => {
     console.log('Opening video:', videoUrl);
 
     // Redirect to the video URL in the same tab
     window.location.href = videoUrl;
   };
+
 
   const renderSchedulerPlaylist = () => {
     if (!Array.isArray(schedulerData) || schedulerData.length === 0) {
@@ -50,33 +52,23 @@ export const Theateroperator = () => {
       : schedulerData;
   
     return filteredSchedulerData.map(scheduler => (
-      <div key={scheduler.id} className="scheduler-playlist-item">
+      <div key={scheduler.scheduler_id} className="scheduler-playlist-item">
         <h3>{`Scheduler ${scheduler.scheduler_index} - ${new Date(scheduler.start_date).toDateString()}`}</h3>
         <ul>
-          {Object.keys(scheduler).map(key => {
-            if (key.includes('_link') && scheduler[key]) {
-              return (
-                <li key={key}>
-                  <a href={scheduler[key]} target="_blank" rel="noopener noreferrer">
-                    {`${key.replace('_link', '')}: View Video`}
-                  </a>
-                  <br />
-                </li>
-              );
-            }
-            return null;
-          })}
+          {scheduler.video_links
+            .filter(videoLink => videoLink && Object.values(videoLink)[0]) // Filter out null or empty links
+            .map((videoLink, index) => (
+              <li key={index}>
+                <a href={Object.values(videoLink)[0]} target="_blank" rel="noopener noreferrer">
+                  {`Video ${index + 1}: View Video`}
+                </a>
+                <br />
+              </li>
+            ))}
         </ul>
         <button onClick={() => handlePlayButtonClick(scheduler)}>Play All</button>
       </div>
     ));
-  };
-  
-
-  const getVideoInfo = (videoId) => {
-    // Placeholder function, replace this with actual implementation
-    // Fetch video information based on videoId or use cached video data
-    return { video: `Video ${videoId}`, duration: '5:00' };
   };
 
   const theaters = [

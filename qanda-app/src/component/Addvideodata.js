@@ -31,7 +31,7 @@ export const Addvideodata = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8002/api/add-video', {
+      const response = await fetch('http://localhost:8010/api/add-video', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

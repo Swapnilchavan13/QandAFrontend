@@ -22,10 +22,10 @@ export const Scheduler = () => {
 
   useEffect(() => {
     // Fetch videos from the backend API using fetch
-    fetch('http://localhost:8002/api/allVideos')
+    fetch('http://192.168.0.113:8010/api/allVideos')
       .then(response => response.json())
       .then(data => {
-        setVideos(data);
+        setVideos(data.results);
       })
       .catch(error => {
         console.error('Error fetching videos:', error);
@@ -81,48 +81,37 @@ export const Scheduler = () => {
     return videos.filter(video => !selectedIds.includes(video));
   };
 
-  const handleSaveClick = async (schedulerIndex) => {
-    const schedulerData = {
-      theater_id: selectedTheater,
+  // Inside handleSaveClick function
+const handleSaveClick = async (schedulerIndex) => {
+  const schedulerData = {
+    theater_id: selectedTheater,
     start_date: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
     scheduler_index: schedulerIndex + 1,
-      video_1_link : selectedSchedules[schedulerIndex][0] || null,
-      video_2_link : selectedSchedules[schedulerIndex][1] || null,
-      video_3_link : selectedSchedules[schedulerIndex][2] || null,
-      video_4_link : selectedSchedules[schedulerIndex][3] || null,
-      video_5_link : selectedSchedules[schedulerIndex][4] || null,
-      video_6_link : selectedSchedules[schedulerIndex][5] || null,
-      video_7_link : selectedSchedules[schedulerIndex][6] || null,
-      video_8_link : selectedSchedules[schedulerIndex][7] || null,
-      video_9_link : selectedSchedules[schedulerIndex][8] || null,
-      video_10_link : selectedSchedules[schedulerIndex][9] || null,
-      video_11_link : selectedSchedules[schedulerIndex][10] || null,
-      video_12_link : selectedSchedules[schedulerIndex][11] || null,
-      video_13_link : selectedSchedules[schedulerIndex][12] || null,
-      video_14_link : selectedSchedules[schedulerIndex][13] || null,
-      video_15_link : selectedSchedules[schedulerIndex][14] || null,
-      errors: errors[schedulerIndex],
-    };
-  
-    try {
-      const response = await fetch('http://localhost:8002/api/saveSchedulerData', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(schedulerData),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Data saved successfully:', data);
-      } else {
-        console.error('Error saving data:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
+    video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({
+      [`video_${index + 1}_link`]: videoLink || null,
+    })),
+    errors: errors[schedulerIndex],
   };
+
+  try {
+    const response = await fetch('http://localhost:8010/api/saveSchedulerData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(schedulerData),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Data saved successfully:', data);
+    } else {
+      console.error('Error saving data:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error saving data:', error);
+  }
+};
+
   
   const renderDropdowns = (startDate, schedulerIndex) => {
     return Array(15).fill().map((_, slotIndex) => (
@@ -135,14 +124,16 @@ export const Scheduler = () => {
         >
           <option value="" disabled>Select a video</option>
           {getAvailableOptions(schedulerIndex, slotIndex).map(video => (
-            <option key={video.video_id} value={video.video}>
-              {video.video}
+            <option key={video.videoID} value={video.videoURL}>
+              {video.videoURL}
             </option>
           ))}
         </select>
       </div>
     ));
   };
+
+  console.log(selectedSchedules)
 
   const renderSchedulers = () => {
     return startDates.map((startDate, index) => (
@@ -163,13 +154,13 @@ export const Scheduler = () => {
   const renderDropdown = () => {
     return (
       <div>
-         <label>Theater Name:</label>
         <select
           className='selecttag'
           value={selectedTheater}
           onChange={(e) => setSelectedTheater(e.target.value)}
         >
           <option value="" disabled>Select a theater</option>
+         <label>Theater Name:</label>
           {theaters.map(theater => (
             <option key={theater.theater_id} value={theater.theater_id}>
               {theater.theater_name}
