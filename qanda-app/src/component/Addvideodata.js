@@ -18,7 +18,7 @@ function Addvideodata() {
     optionFour:'',
     optionFive:'',
     adStartTime:'',
-    trueAnswer:''
+    correctOption:''
   });
 
   const [showAlert, setShowAlert] = useState(false);
@@ -27,7 +27,22 @@ function Addvideodata() {
   const [videoType,setVideoType] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-   
+  const questionMapping = {
+    1: "WOULD YOU LIKE TO A SAMPLE OF THIS LIPSTIK RIGHT NOW?",
+    2: "HONESTLY, HOW WAS THIS AD?",
+    3: "YOUR ANSWER WILL HELP US MAKE SUITABLE & CUSTOMISED OFFERS FOR YOU",
+    4: "WHICH FEMALE ACTOR WAS IN THE AD?",
+  };
+
+
+  const handleQuestionTypeIDChange = (e) => {
+    const selectedQuestionTypeID = e.target.value;
+    setFormData({
+      ...formData,
+      questionTypeID: selectedQuestionTypeID,
+      questionDesc: questionMapping[selectedQuestionTypeID] || "", // Set the question based on the mapping
+    });
+  };
 
   const handleVideoTypeChange = (videoType) => {
     setVideoType(videoType);
@@ -153,14 +168,31 @@ function Addvideodata() {
       <br />
       <br/>      
       <label>
-        Question:
-        <input type="text" name="questionDesc" value={formData.questionDesc} onChange={handleChange} />
+        Question Type ID:
+        <select
+          name="questionTypeID"
+          value={formData.questionTypeID}
+          onChange={handleQuestionTypeIDChange}
+        >
+          <option value="">Select Question Type ID</option>
+          {[1, 2, 3, 4].map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </select>
       </label>
       <br />
-      <br/>      
+      <br />
       <label>
-        Question Type ID:
-        <input type="text" name="questionTypeID" value={formData.questionTypeID} onChange={handleChange} />
+        Question:
+        <input
+          type="text"
+          name="questionDesc"
+          value={formData.questionDesc}
+          onChange={handleChange}
+          readOnly
+        />
       </label>
       <br />
       <br/>      
@@ -202,7 +234,7 @@ function Addvideodata() {
       <br/>
       <label>
       True Answer:
-        <input type="text" name="trueAnswer" value={formData.trueAnswer} onChange={handleChange} />
+        <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
       </label>
       <br />
       <br/>
