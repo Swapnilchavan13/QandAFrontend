@@ -104,6 +104,8 @@ const handleSaveClick = async (schedulerIndex) => {
     if (response.ok) {
       const data = await response.json();
       console.log('Data saved successfully:', data);
+
+      alert('Data saved successfully:')
     } else {
       console.error('Error saving data:', response.statusText);
     }

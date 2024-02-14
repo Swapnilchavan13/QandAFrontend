@@ -66,7 +66,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Scheduler } from './component/Scheduler';
 import { Theateroperator } from './component/Theateroperator';
-import { Addvideodata } from './component/Addvideodata';
+import  Addvideodata  from './component/Addvideodata';
 import { Navbar } from './component/Navbar';
 import { VideoPlayer } from './component/VideoPlayer';
 

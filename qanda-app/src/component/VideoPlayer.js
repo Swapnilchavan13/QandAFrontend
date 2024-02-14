@@ -38,7 +38,7 @@ export const VideoPlayer = () => {
       <h1>Video Player</h1>
       {videoLinks.length > 0 && (
         <div>
-          <video
+          {/* <video
             id="videoElement"
             width="640"
             height="360"
@@ -47,9 +47,21 @@ export const VideoPlayer = () => {
             onEnded={handleVideoEnded}
             ref={videoRef}
           >
-            <source src={videoLinks[currentIndex]} type="video/mp4" />
+            <source src={`http://192.168.0.113:3000${videoLinks[currentIndex]}`} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </video> */}
+          <h1>{videoLinks[currentIndex]}</h1>
+          
+
+<video
+ id="videoElement"
+            width="1240"
+            height="660"
+            autoPlay
+            controls
+            onEnded={handleVideoEnded}
+            // ref={videoRef} 
+            src={`http://192.168.0.113:3000${videoLinks[currentIndex]}`}></video>
         </div>
       )}
     </div>
