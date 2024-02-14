@@ -90,6 +90,7 @@ const handleSaveClick = async (schedulerIndex) => {
     video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({
       [`video_${index + 1}_link`]: videoLink || null,
     })),
+    
     errors: errors[schedulerIndex],
   };
 
@@ -196,3 +197,4 @@ const handleSaveClick = async (schedulerIndex) => {
     </>
   );
 };
+

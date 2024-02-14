@@ -123,6 +123,7 @@ function Addvideodata() {
 
   return (
     <form className="video-form" onSubmit={handleSubmit}>
+      <h1>Add Video Data</h1>
       <label>
         Video URL:
         <input type="file" onChange={handleVideoChange} />
@@ -233,7 +234,7 @@ function Addvideodata() {
       <br />
       <br/>
       <label>
-      True Answer:
+      Correct Option:
         <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
       </label>
       <br />
@@ -277,9 +278,9 @@ export default Addvideodata
 //     options_option_3: '',
 //     image: '',
 //     state: '',
-//     currentTime: '',
 //   });
 
+//     currentTime: '',
 //   const handleChange = (event) => {
 //     const { name, value } = event.target;
 //     setFormData((prevData) => ({
