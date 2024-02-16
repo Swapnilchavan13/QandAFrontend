@@ -3,7 +3,9 @@ import "../styles/userdata.css";
 
 export const UserResponse = () => {
   const [userResponse, setUserResponse] = useState([]);
-
+  const [filteredCardID, setFilteredCardID] = useState('');
+  const [filteredPhoneNumber, setFilteredPhoneNumber] = useState('');
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -18,26 +20,63 @@ export const UserResponse = () => {
     fetchData();
   }, []);
 
+  const handleCardIDChange = (event) => {
+    setFilteredCardID(event.target.value);
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    setFilteredPhoneNumber(event.target.value);
+  };
+
+  const filteredUserResponse = userResponse.filter(response =>
+    response.cardID.includes(filteredCardID) &&
+    response.phoneNumber.includes(filteredPhoneNumber)
+  );
+
   return (
     <div className="container">
       <h2>User Response Details</h2>
-      {userResponse ? (
-        userResponse.map((userResponse) => (
-          <div key={userResponse.userResponseID} className="user-response-details">
-            <p>User Response ID: {userResponse.userResponseID}</p>
-            <p>User ID: {userResponse.userID}</p>
-            <p>Option Selected: {userResponse.optionSelected}</p>
-            <p>Video Data ID: {userResponse.videoDataID}</p>
-            <p>Is Correct: {userResponse.isCorrect ? 'Yes' : 'No'}</p>
-            <p>Question Type ID: {userResponse.questionTypeID}</p>
-            <p>User Name: {userResponse.userName}</p>
-            <p>Card ID: {userResponse.cardID}</p>
-            <p>Phone Number: {userResponse.phoneNumber}</p>
-            <p>Date and Time: {userResponse.dateAndTime}</p>
-          </div>
-        ))
+      <div className="filter-container">
+        <label>Filter by Card ID:</label>
+        <input type="text" value={filteredCardID} onChange={handleCardIDChange} />
+      </div>
+      <div className="filter-container">
+        <label>Filter by Phone Number:</label>
+        <input type="text" value={filteredPhoneNumber} onChange={handlePhoneNumberChange} />
+      </div>
+      {filteredUserResponse.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Sr Number</th>
+              <th>Date and Time</th>
+              <th>User Name</th>
+              <th>User ID</th>
+              <th>Card ID</th>
+              <th>Phone Number</th>
+              <th>Question Type ID</th>
+              <th>Option Selected</th>
+              <th>Is Correct</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUserResponse.map((userResponse, index) => (
+              <tr key={userResponse.userResponseID} className="user-response-details">
+                <td>{index + 1}</td>
+                <td>{userResponse.dateAndTime}</td>
+                <td>{userResponse.userName}</td>
+                <td>{userResponse.userID}</td>
+                <td>{userResponse.cardID}</td>
+                <td>{userResponse.phoneNumber}</td>
+                <td>{userResponse.questionTypeID}</td>
+                <td>{userResponse.optionSelected}</td>
+                <td>{userResponse.isCorrect ? 'Yes' : 'No'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
-        <p>Loading user responses...</p>
+        <p>No matching user responses found.</p>
       )}
     </div>
   );
