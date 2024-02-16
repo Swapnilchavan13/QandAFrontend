@@ -58,8 +58,6 @@ export const Scheduler = () => {
     }, 0).toFixed(2);
   };
   
-  
-  
 
   const validateSlotLimit = (schedulerIndex) => {
     const totalDuration = getTotalDurationInMinutes(schedulerIndex);
@@ -148,6 +146,11 @@ export const Scheduler = () => {
   };
 
   const renderSchedulers = () => {
+    // Check if there are videos available
+    if (videos.length === 0) {
+      return <p>No data added from the upload section.</p>;
+    }
+  
     return startDates.map((startDate, index) => (
       <div key={index} className="scheduler-container">
         <p className="slot-limit-info">{`Slot limit: ${slotLimit} minutes`}</p>
@@ -163,6 +166,7 @@ export const Scheduler = () => {
       </div>
     ));
   };
+  
 
   const renderDropdown = () => {
     return (

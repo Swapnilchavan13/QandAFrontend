@@ -14,6 +14,9 @@ export const Navbar = () => {
       <Link to="theateroperator">
         <h3>See Playlist</h3>
       </Link>
+      <Link to="userresponse">
+        <h3>User Response</h3>
+      </Link>
     </div>
   );
 };

@@ -69,6 +69,7 @@ import { Theateroperator } from './component/Theateroperator';
 import  Addvideodata  from './component/Addvideodata';
 import { Navbar } from './component/Navbar';
 import { VideoPlayer } from './component/VideoPlayer';
+import { UserResponse } from './component/UserResponce';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -232,6 +233,9 @@ function App() {
           <Route path="scheduler" element={<Scheduler />} />
           <Route path="theateroperator" element={<Theateroperator />} />
           <Route path="video-player" element={<VideoPlayer />} />
+          <Route path="userresponse" element={<UserResponse />} />
+
+          
 
       </Routes>
     </BrowserRouter>
