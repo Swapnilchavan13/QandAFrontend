@@ -56,11 +56,12 @@ export const UserResponse = () => {
               <th>Phone Number</th>
               <th>Question Type ID</th>
               <th>Option Selected</th>
-              <th>Is Correct</th>
+              <th>Correct Option</th>
+              <th>User Answer</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUserResponse.map((userResponse, index) => (
+            {filteredUserResponse.reverse().map((userResponse, index) => (
               <tr key={userResponse.userResponseID} className="user-response-details">
                 <td>{index + 1}</td>
                 <td>{userResponse.dateAndTime}</td>
@@ -68,9 +69,17 @@ export const UserResponse = () => {
                 <td>{userResponse.userID}</td>
                 <td>{userResponse.cardID}</td>
                 <td>{userResponse.phoneNumber}</td>
-                <td>{userResponse.questionTypeID}</td>
+                <td>{userResponse.questionDesc}</td>
                 <td>{userResponse.optionSelected}</td>
-                <td>{userResponse.isCorrect ? 'Yes' : 'No'}</td>
+                <td>{userResponse.correctOption}</td>
+
+                <td>
+  {userResponse.optionSelected === userResponse.correctOption
+    ? 'Right Answer'
+    : userResponse.correctOption === 'NIL'
+    ? 'N/A'
+    : 'Wrong Answer'}
+</td>
               </tr>
             ))}
           </tbody>
