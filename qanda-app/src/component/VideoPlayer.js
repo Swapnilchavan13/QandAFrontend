@@ -92,7 +92,7 @@ export const VideoPlayer = () => {
             allow="fullscreen"
             id="videoElement"
             autoPlay
-            controls
+            // controls
             allowfullscreen
             onEnded={handleVideoEnded}
             src={`http://192.168.0.113:3000${videoLinks[currentIndex]}`}
