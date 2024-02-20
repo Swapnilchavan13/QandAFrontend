@@ -12,7 +12,7 @@ export const Navbar = () => {
         <h3>Schedule Playlist</h3>
       </Link>
       <Link to="theateroperator">
-        <h3>See Playlist</h3>
+        <h3>View Playlist</h3>
       </Link>
       <Link to="userresponse">
         <h3>User Response</h3>

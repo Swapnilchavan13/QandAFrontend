@@ -203,7 +203,7 @@ export const Scheduler = () => {
 
   return (
     <>
-      <h1>Scheduling Content</h1>
+      <h1>Slot Content</h1>
       {renderDropdown()}
       <div className="scheduler-wrapper">
       {selectedTheater && renderSchedulers()}
