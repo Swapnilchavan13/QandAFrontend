@@ -6,10 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell
+  Legend
 } from 'recharts';
 import * as XLSX from 'xlsx';
 import '../styles/userdata.css';
@@ -20,7 +17,6 @@ export const UserResponse = () => {
   const [filteredPhoneNumber, setFilteredPhoneNumber] = useState('');
   const [selectedQuestionTypeID, setSelectedQuestionTypeID] = useState('');
   const [filteredQuestionDesc, setFilteredQuestionDesc] = useState('');
-
   const [uniqueQuestionTypeIDs, setUniqueQuestionTypeIDs] = useState([]);
 
   useEffect(() => {
@@ -180,8 +176,7 @@ export const UserResponse = () => {
         ) : (
           <p>No matching user responses found.</p>
         )}
-                <button onClick={exportToExcel}>Export to Excel</button>
-
+        <button onClick={exportToExcel}>Export to Excel</button>
       </div>
     </>
   );
