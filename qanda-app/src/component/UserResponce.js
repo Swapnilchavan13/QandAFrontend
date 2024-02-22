@@ -98,7 +98,7 @@ export const UserResponse = () => {
     <>
       <div className="chart-container">
         <h3>Bar Chart</h3>
-        <BarChart width={250} height={300} data={Object.entries(barChartData)}>
+        <BarChart width={750} height={400} data={Object.entries(barChartData)}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="0" />
           <YAxis />
