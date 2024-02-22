@@ -185,7 +185,7 @@ export const Scheduler = () => {
           ))}
         </select>
 
-        <label>Number of Schedulers:</label>
+        <label>Number of Slots:</label>
         <select
           className='selecttag'
           value={schedulerCount}
