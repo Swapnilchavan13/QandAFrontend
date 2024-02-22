@@ -127,7 +127,7 @@ export const Theateroperator = () => {
 
   useEffect(() => {
     // Fetch scheduler data from the backend API using axios
-    axios.get('http://localhost:8010/api/allSchedulerData')
+    axios.get('http://192.168.0.113:8010/api/allSchedulerData')
       .then(response => {
         setSchedulerData(response.data);
       })
@@ -202,8 +202,8 @@ export const Theateroperator = () => {
     var filteredSchedulerData = selectedTheater
       ? schedulerData.results.filter(scheduler => scheduler.theater_id === parseInt(selectedTheater, 10))
       : schedulerData;
-    console.log("type of filteredSchedulerData",typeof(filteredSchedulerData))
-
+    console.log("type of filteredSchedulerData.video_links",filteredSchedulerData.video_links)
+    
     filteredSchedulerData = (filteredSchedulerData).map(item => {
       return {
           ...item,
