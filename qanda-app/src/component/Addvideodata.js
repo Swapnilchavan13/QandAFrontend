@@ -38,10 +38,22 @@ function Addvideodata() {
   };
 
   const optionMapping = {
-    2: "CSS For 2",
-    3: "CSS For 3",
-    4: "CSS For 4",
-    5: "CSS For 5"
+    2: [
+      "{padx:177, pady:60, text:font_style_45, x:0,y:424},{padx:192, pady:54, text:font_style_45,x:0,y:617}"
+  ],
+  3: [
+    "{padx:177, pady:60, text:font_style_45,x:0,y:424},{padx:192, pady:54, text:font_style_45,x:0,y:617}"
+],
+4: [
+  "{padx:57, pady:27, text:font_style_45,x:0,y:291},{padx:4, pady:27, text:font_style_45,x:0,y:418},{padx:64, pady:27, text:font_style_45,x:0,y:545},{padx:44, pady:27, text:font_style_45,x:0,y:672}",
+],
+5.1: [
+  "{padx:110, pady:22, text:font_style_45,x:0,y:230},{padx:180, pady:22, text:font_style_45,x:0,y:345},{padx:170, pady:22, text:font_style_45,x:0,y:460},{padx:80, pady:0,text:font_style_45,x:0,y:575},{padx:80, pady:22, text:font_style_45,x:0,y:690}"
+],
+5.2: [
+  "{padx:20, pady:22, text:font_style_45,x:0,y:230},{padx:20, pady:22, text:font_style_45,x:0,y:345},{padx:45, pady:20, text:font_style_45,x:0,y:462},{padx:128, pady:22, text:font_style_45,x:0,y:575},{padx:39, pady:17, text:font_style_45,x:0,y:692}"
+],
+
   };
 
 
@@ -226,7 +238,7 @@ function Addvideodata() {
           onChange={handleoption}
         >
           <option value="">Select Available Options</option>
-          {[2, 3, 4, 5].map((option) => (
+          {[2, 3, 4, 5.1, 5.2].map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
