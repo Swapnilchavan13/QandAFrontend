@@ -12,7 +12,7 @@ function Addvideodata() {
     questionDesc:'',
     questionTypeID: '',
     option: '',
-    optionDesc:'',
+    optionsdesc:'',
     duration:'',
     optionOne:'',
     optionTwo:'',
@@ -39,21 +39,52 @@ function Addvideodata() {
 
   const optionMapping = {
     2: [
-      "{padx:177, pady:60, text:font_style_45, x:0,y:424},{padx:192, pady:54, text:font_style_45,x:0,y:617}"
-  ],
+      {padx:{"padx1":177,"padx2":192}}, 
+      {pady:{"pady1":60,"pady2":54,}}, 
+      {text: "font_style_45"}, 
+      {x:{"x1":0,"x2":0}},
+      {y:{"y1":424,"y2":617}},
+      {color:"red"}
+
+    ],
+
   3: [
-    "{padx:177, pady:60, text:font_style_45,x:0,y:424},{padx:192, pady:54, text:font_style_45,x:0,y:617}"
-],
-4: [
-  "{padx:57, pady:27, text:font_style_45,x:0,y:291},{padx:4, pady:27, text:font_style_45,x:0,y:418},{padx:64, pady:27, text:font_style_45,x:0,y:545},{padx:44, pady:27, text:font_style_45,x:0,y:672}",
+    {"padx1":177,"padx2":192}, 
+    {"pady1":60,"pady2":54}, 
+    {text: "font_style_45"}, 
+    {"x1":0,"x2":0},
+    {"y1":424,"y2":617},
+    {color:"red"}
+
+  ],    
+
+    4: [
+      {"padx1":57,"padx2":4, "padx3":64, "padx4":44},
+      {"pady1":27, "pady2":27, "pady3":27, "pady4":27},
+      {text:"font_style_45"},
+      {"x1":0,"x2":0,"x3":0,"x4":0},
+      {"y1":291,"y2":418,"y3":545,"y4":672},
+      {color:"red"}
 ],
 5.1: [
-  "{padx:110, pady:22, text:font_style_45,x:0,y:230},{padx:180, pady:22, text:font_style_45,x:0,y:345},{padx:170, pady:22, text:font_style_45,x:0,y:460},{padx:80, pady:0,text:font_style_45,x:0,y:575},{padx:80, pady:22, text:font_style_45,x:0,y:690}"
-],
-5.2: [
-  "{padx:20, pady:22, text:font_style_45,x:0,y:230},{padx:20, pady:22, text:font_style_45,x:0,y:345},{padx:45, pady:20, text:font_style_45,x:0,y:462},{padx:128, pady:22, text:font_style_45,x:0,y:575},{padx:39, pady:17, text:font_style_45,x:0,y:692}"
+  {"padx1":110,"padx2":180, "padx3":170, "padx4":80, "padx5":80},
+  {"pady1":22, "pady2":22, "pady3":22, "pady4":0, "pady5":22},
+  {text:"font_style_45"},
+  {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
+  {"y1":230,"y2":345,"y3":460,"y4":575, "y5":690},
+  {color:"red"}
+
 ],
 
+5.2: [
+ {"padx1":20,"padx2":20, "padx3":45, "padx4":128, "padx5":39},
+  {"pady1":22, "pady2":22, "pady3":20, "pady4":22, "pady5":17},
+  {text:"font_style_45"},
+  {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
+  {"y1":230,"y2":345,"y3":462,"y4":575, "y5":692},
+  {color:"red"}
+
+],
   };
 
 
@@ -72,7 +103,7 @@ function Addvideodata() {
     setFormData({
       ...formData,
       option: optionid,
-      optionDesc: optionMapping[optionid] || "",
+      optionsdesc: optionMapping[optionid] || "",
 
     });
   };
@@ -248,18 +279,78 @@ function Addvideodata() {
       <br />
       <br />
       <label>
-        Option CSS Selected:
+        Padx:
         <input
           type="text"
-          name="optionDesc"
-          value={formData.optionDesc}
+          name="padx"
+          value={JSON.stringify(formData.optionsdesc[0])}
           onChange={handleChange}
           readOnly
         />
       </label>
       <br />
-      <br/>      
+      <br/>  
       <label>
+        Pady:
+        <input
+          type="text"
+          name="pady"
+          value={JSON.stringify(formData.optionsdesc[1])}
+          onChange={handleChange}
+          readOnly
+        />
+      </label>
+      <br />
+      <br/>     
+      <label>
+      <label>
+        Text:
+        <input
+          type="text"
+          name="text"
+          value={JSON.stringify(formData.optionsdesc[2])}
+          onChange={handleChange}
+          readOnly
+        />
+      </label>
+      <br />
+      <br/> 
+      <label>
+        X:
+        <input
+          type="text"
+          name="x"
+          value={JSON.stringify(formData.optionsdesc[3])}
+          onChange={handleChange}
+          readOnly
+        />
+      </label>
+      <br />
+      <br/> 
+      <label>
+        Y:
+        <input
+          type="text"
+          name="y"
+          value={JSON.stringify(formData.optionsdesc[4])}
+          onChange={handleChange}
+          readOnly
+        />
+      </label>
+      <br />
+      <br/> 
+      <label>
+        Color:
+        <input
+          type="text"
+          name="color"
+          value={JSON.stringify(formData.optionsdesc[5])}
+          onChange={handleChange}
+          readOnly
+        />
+      </label>
+      <br />
+      <br/> 
       Duration ( in minutes ):
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
