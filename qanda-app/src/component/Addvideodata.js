@@ -3,16 +3,23 @@ import"../styles/addvideo.css";
 
 function Addvideodata() {
   const [formData, setFormData] = useState({
+
     videoURL: '',
     imageURL: '',
     dateAndTime:'',
-    brandName:'',
+    // brandName:'',
     questionType: '',
     videoType:'',
     questionDesc:'',
     questionTypeID: '',
     option: '',
-    optionsdesc:'',
+    // optionsdesc:'',
+    padX:'',
+    padY:'',
+    text:'',
+    x:'',
+    y:'',
+    colours:'',
     duration:'',
     optionOne:'',
     optionTwo:'',
@@ -39,13 +46,12 @@ function Addvideodata() {
 
   const optionMapping = {
     2: [
-      {padx:{"padx1":177,"padx2":192}}, 
-      {pady:{"pady1":60,"pady2":54,}}, 
+      {"padx1":177,"padx2":192}, 
+      {"pady1":60,"pady2":54,}, 
       {text: "font_style_45"}, 
-      {x:{"x1":0,"x2":0}},
-      {y:{"y1":424,"y2":617}},
+      {"x1":0,"x2":0},
+      {"y1":424,"y2":617},
       {color:"red"}
-
     ],
 
   3: [
@@ -55,7 +61,6 @@ function Addvideodata() {
     {"x1":0,"x2":0},
     {"y1":424,"y2":617},
     {color:"red"}
-
   ],    
 
     4: [
@@ -66,6 +71,7 @@ function Addvideodata() {
       {"y1":291,"y2":418,"y3":545,"y4":672},
       {color:"red"}
 ],
+
 5.1: [
   {"padx1":110,"padx2":180, "padx3":170, "padx4":80, "padx5":80},
   {"pady1":22, "pady2":22, "pady3":22, "pady4":0, "pady5":22},
@@ -73,7 +79,6 @@ function Addvideodata() {
   {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
   {"y1":230,"y2":345,"y3":460,"y4":575, "y5":690},
   {color:"red"}
-
 ],
 
 5.2: [
@@ -83,9 +88,8 @@ function Addvideodata() {
   {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
   {"y1":230,"y2":345,"y3":462,"y4":575, "y5":692},
   {color:"red"}
-
 ],
-  };
+};
 
 
   const handleQuestionTypeIDChange = (e) => {
@@ -103,10 +107,17 @@ function Addvideodata() {
     setFormData({
       ...formData,
       option: optionid,
-      optionsdesc: optionMapping[optionid] || "",
+      // optionsdesc: optionMapping[optionid] || "",
+      padX: optionMapping[optionid][0] || "",
+      padY: optionMapping[optionid][1] || "",
+      text: optionMapping[optionid][2] || "",
+      x: optionMapping[optionid][3] || "",
+      y: optionMapping[optionid][4] || "",
+      colours: optionMapping[optionid][5] || "",
 
     });
   };
+
 
   const handleVideoTypeChange = (videoType) => {
     setVideoType(videoType);
@@ -158,12 +169,10 @@ function Addvideodata() {
   const handleSubmit = async (e) => {
     console.log('hello')
     e.preventDefault();
-     
-      
       console.log("final form data:",formData);
 
-    try {
-      const response = await fetch('http://192.168.0.113:8010/uploadVideo', {
+     try {
+      const response = await fetch('http://192.168.0.113:8010/api/uploadVideo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,6 +192,7 @@ function Addvideodata() {
     } catch (error) {
       console.error('Error:', error);
     }
+    
   };
 
   return (
@@ -249,7 +259,7 @@ function Addvideodata() {
       </label>
       <br />
       <br />
-      <label>
+      {/* <label>
         Question:
         <input
           type="text"
@@ -258,7 +268,7 @@ function Addvideodata() {
           onChange={handleChange}
           readOnly
         />
-      </label>
+      </label> */}
       <br />
       <br />
       <label>
@@ -282,9 +292,9 @@ function Addvideodata() {
         Padx:
         <input
           type="text"
-          name="padx"
-          value={JSON.stringify(formData.optionsdesc[0])}
-          onChange={handleChange}
+          name="padX"
+          value={formData.padX}
+          onChange={handleoption}
           readOnly
         />
       </label>
@@ -294,9 +304,9 @@ function Addvideodata() {
         Pady:
         <input
           type="text"
-          name="pady"
-          value={JSON.stringify(formData.optionsdesc[1])}
-          onChange={handleChange}
+          name="padY"
+          value={formData.padY}
+          onChange={handleoption}
           readOnly
         />
       </label>
@@ -308,8 +318,8 @@ function Addvideodata() {
         <input
           type="text"
           name="text"
-          value={JSON.stringify(formData.optionsdesc[2])}
-          onChange={handleChange}
+          value={formData.text}
+          onChange={handleoption}
           readOnly
         />
       </label>
@@ -320,8 +330,8 @@ function Addvideodata() {
         <input
           type="text"
           name="x"
-          value={JSON.stringify(formData.optionsdesc[3])}
-          onChange={handleChange}
+          value={formData.x}
+          onChange={handleoption}
           readOnly
         />
       </label>
@@ -332,8 +342,8 @@ function Addvideodata() {
         <input
           type="text"
           name="y"
-          value={JSON.stringify(formData.optionsdesc[4])}
-          onChange={handleChange}
+          value={formData.y}
+          onChange={handleoption}
           readOnly
         />
       </label>
@@ -343,11 +353,12 @@ function Addvideodata() {
         Color:
         <input
           type="text"
-          name="color"
-          value={JSON.stringify(formData.optionsdesc[5])}
-          onChange={handleChange}
+          name="colours"
+          value={formData.colours}
+          onChange={handleoption}
           readOnly
         />
+
       </label>
       <br />
       <br/> 
