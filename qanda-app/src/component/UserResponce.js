@@ -51,8 +51,8 @@ export const UserResponse = () => {
    
   const filteredUserResponse = userResponse.filter(
     (response) =>
-      response.cardID.includes(filteredCardID) &&
-      response.phoneNumber.includes(filteredPhoneNumber) &&
+      response.cardID.toString().includes(filteredCardID) &&
+      response.phoneNumber.toString().includes(filteredPhoneNumber) &&
       (selectedQuestionTypeID === '' || response.questionDesc === selectedQuestionTypeID)
   );
 

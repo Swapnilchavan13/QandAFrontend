@@ -106,12 +106,12 @@ function Addvideodata() {
       ...formData,
       option: optionid,
       // optionsdesc: optionMapping[optionid] || "",
-      padX: optionMapping[optionid][0] || "",
-      padY: optionMapping[optionid][1] || "",
-      text: optionMapping[optionid][2] || "",
-      x: optionMapping[optionid][3] || "",
-      y: optionMapping[optionid][4] || "",
-      colours: optionMapping[optionid][5] || "",
+      padX: JSON.stringify(optionMapping[optionid][0]) || "",
+      padY: JSON.stringify(optionMapping[optionid][1])|| "",
+      text: JSON.stringify(optionMapping[optionid][2]) || "",
+      x: JSON.stringify(optionMapping[optionid][3])|| "",
+      y: JSON.stringify(optionMapping[optionid][4]) || "",
+      colours: JSON.stringify(optionMapping[optionid][5]) || "",
     });
   };
 
@@ -286,7 +286,7 @@ function Addvideodata() {
         <input
           type="text"
           name="padX"
-          value={formData.padX}
+          value={JSON.stringify(formData.padX)}
           onChange={handleoption}
           readOnly
         />
@@ -298,7 +298,7 @@ function Addvideodata() {
         <input
           type="text"
           name="padY"
-          value={formData.padY}
+          value={JSON.stringify(formData.padY)}
           onChange={handleoption}
           
           readOnly
@@ -312,7 +312,7 @@ function Addvideodata() {
         <input
           type="text"
           name="text"
-          value={formData.text}
+          value={JSON.stringify(formData.text)}
           onChange={handleoption}
           readOnly
         />
@@ -324,7 +324,7 @@ function Addvideodata() {
         <input
           type="text"
           name="x"
-          value={formData.x}
+          value={JSON.stringify(formData.x)}
           onChange={handleoption}
           readOnly
         />
@@ -336,7 +336,7 @@ function Addvideodata() {
         <input
           type="text"
           name="y"
-          value={formData.y}
+          value={JSON.stringify(formData.y)}
           onChange={handleoption}
           readOnly
         />
@@ -348,7 +348,7 @@ function Addvideodata() {
         <input
           type="text"
           name="colours"
-          value={formData.colours}
+          value={JSON.stringify(formData.colours)}
           onChange={handleoption}
           readOnly
         />
