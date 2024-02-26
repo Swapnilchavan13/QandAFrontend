@@ -91,7 +91,6 @@ function Addvideodata() {
 ],
 };
 
-
   const handleQuestionTypeIDChange = (e) => {
     const selectedQuestionTypeID = e.target.value;
     setFormData({
@@ -101,7 +100,6 @@ function Addvideodata() {
     });
   };
 
-  
   const handleoption = (e) => {
     const optionid = e.target.value;
     setFormData({
@@ -178,12 +176,8 @@ function Addvideodata() {
         },
         body: JSON.stringify(formData),
       });
-      //console.log("response.body",response.body)
       if (response.ok) {
         alert('Data saved successfully!');
-        console.log('Data uploaded successfully');
-        console.log(formData);
-        // Add any additional logic or state updates as needed
       } else {
         console.error('Error uploading data');
         alert('Error uploading data!');
