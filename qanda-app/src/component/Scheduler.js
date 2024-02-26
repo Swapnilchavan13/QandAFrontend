@@ -15,7 +15,6 @@ const Scheduler = () => {
     { theater_id: 2, theater_name: 'Theater B' },
     { theater_id: 3, theater_name: 'Theater C' },
     { theater_id: 4, theater_name: 'Theater D' },
-
   ]);
 
   const [selectedTheater, setSelectedTheater] = useState('');
@@ -91,19 +90,18 @@ const Scheduler = () => {
   // Inside handleSaveClick function
 const handleSaveClick = async (schedulerIndex) => {
     const schedulerData = {
-      theater_id: selectedTheater,
+      theatre_id: selectedTheater,
       start_date: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
-      scheduler_index: schedulerIndex + 1,
-      errors: errors[schedulerIndex],
+      slot_index: schedulerIndex + 1,
+      video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({[`videoLink`]: videoLink.replace(/\\/g, '/') || null, })),
   };
 console.log(schedulerData);
  try {
-    const response = await fetch('http://localhost:8010/api/saveSchedulerData', {
+    const response = await fetch('http://192.168.0.113:8010/api/saveSchedulerData', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({[`videoLink`]: videoLink.replace(/\\/g, '/') || null, })),
       body: JSON.stringify(schedulerData),
     });
     if (response.ok) {

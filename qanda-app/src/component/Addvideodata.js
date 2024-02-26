@@ -57,8 +57,8 @@ function Addvideodata() {
   3: [
     {"padx1":177,"padx2":192}, 
     {"pady1":60,"pady2":54}, 
-    {text: "font_style_45"}, 
     {"x1":0,"x2":0},
+    {text: "font_style_45"}, 
     {"y1":424,"y2":617},
     {color:"red"}
   ],    
@@ -114,7 +114,6 @@ function Addvideodata() {
       x: optionMapping[optionid][3] || "",
       y: optionMapping[optionid][4] || "",
       colours: optionMapping[optionid][5] || "",
-
     });
   };
 
@@ -259,7 +258,7 @@ function Addvideodata() {
       </label>
       <br />
       <br />
-      {/* <label>
+      <label>
         Question:
         <input
           type="text"
@@ -268,7 +267,7 @@ function Addvideodata() {
           onChange={handleChange}
           readOnly
         />
-      </label> */}
+      </label> 
       <br />
       <br />
       <label>
@@ -307,6 +306,7 @@ function Addvideodata() {
           name="padY"
           value={formData.padY}
           onChange={handleoption}
+          
           readOnly
         />
       </label>
