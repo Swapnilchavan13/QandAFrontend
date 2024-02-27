@@ -45,29 +45,35 @@ export const Theateroperator = () => {
       return <p>No scheduler data available.</p>;
     }
   
-    return schedulerData.scheduler.map((nestedArray, index) => (
+    // Flatten the nested arrays
+    const flattenedSchedulerData = schedulerData.scheduler.flat();
+  
+    // Use a Set to eliminate duplicates based on scheduler_id
+    const uniqueSchedulers = Array.from(new Set(flattenedSchedulerData.map(scheduler => scheduler.scheduler_id)))
+      .map(schedulerId => flattenedSchedulerData.find(scheduler => scheduler.scheduler_id === schedulerId));
+  
+    return uniqueSchedulers.map((scheduler, index) => (
       <div key={index} className="nested-scheduler-container">
-        {nestedArray.map((scheduler, innerIndex) => (
-          <div key={innerIndex} className="scheduler-playlist-item">
-            <h3>{`Slot ${scheduler.slot_index} - ${new Date(scheduler.start_date).toDateString()}`}</h3>
-            <ul>
-              {scheduler.video_links
-                .filter(videoLink => videoLink && Object.values(videoLink)[0]) // Filter out null or empty links
-                .map((videoLink, videoIndex) => (
-                  <li key={videoIndex}>
-                    <a href={Object.values(videoLink)[0]} target="_blank" rel="noopener noreferrer">
-                      {`Video ${videoIndex + 1}: View Video`}
-                    </a>
-                    <br />
-                  </li>
-                ))}
-            </ul>
-            <button onClick={() => handlePlayButtonClick(scheduler)}>Play All</button>
-          </div>
-        ))}
+        <div className="scheduler-playlist-item">
+          <h3>{`Slot ${scheduler.slot_index} - ${new Date(scheduler.start_date).toDateString()}`}</h3>
+          <ul>
+            {scheduler.video_links
+              .filter(videoLink => videoLink && Object.values(videoLink)[0]) // Filter out null or empty links
+              .map((videoLink, videoIndex) => (
+                <li key={videoIndex}>
+                  <a href={Object.values(videoLink)[0]} target="_blank" rel="noopener noreferrer">
+                    {`Video ${videoIndex + 1}: View Video`}
+                  </a>
+                  <br />
+                </li>
+              ))}
+          </ul>
+          <button onClick={() => handlePlayButtonClick(scheduler)}>Play All</button>
+        </div>
       </div>
     ));
   };
+  
   
 
   const theaters = [

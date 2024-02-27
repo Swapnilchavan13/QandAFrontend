@@ -22,10 +22,10 @@ const Scheduler = () => {
   useEffect(() => {
     if(selectedTheater){
     // Fetch videos from the backend API using fetch
-    fetch('http://192.168.0.113:8010/api/allVideos')
+    fetch('http://192.168.0.113:8010/api/allvideos')
       .then(response => response.json())
       .then(data => {
-        setVideos(data.results);
+        setVideos(data);
       })
       .catch(error => {
         console.error('Error fetching videos:', error);

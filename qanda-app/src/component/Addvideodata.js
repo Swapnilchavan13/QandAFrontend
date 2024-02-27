@@ -286,7 +286,7 @@ function Addvideodata() {
         <input
           type="text"
           name="padX"
-          value={JSON.stringify(formData.padX)}
+          value={formData.padX}
           onChange={handleoption}
           readOnly
         />
@@ -298,7 +298,7 @@ function Addvideodata() {
         <input
           type="text"
           name="padY"
-          value={JSON.stringify(formData.padY)}
+          value={formData.padY}
           onChange={handleoption}
           
           readOnly
@@ -312,7 +312,7 @@ function Addvideodata() {
         <input
           type="text"
           name="text"
-          value={JSON.stringify(formData.text)}
+          value={formData.text}
           onChange={handleoption}
           readOnly
         />
@@ -324,7 +324,7 @@ function Addvideodata() {
         <input
           type="text"
           name="x"
-          value={JSON.stringify(formData.x)}
+          value={formData.x}
           onChange={handleoption}
           readOnly
         />
@@ -336,7 +336,7 @@ function Addvideodata() {
         <input
           type="text"
           name="y"
-          value={JSON.stringify(formData.y)}
+          value={formData.y}
           onChange={handleoption}
           readOnly
         />
@@ -348,7 +348,7 @@ function Addvideodata() {
         <input
           type="text"
           name="colours"
-          value={JSON.stringify(formData.colours)}
+          value={formData.colours}
           onChange={handleoption}
           readOnly
         />
@@ -405,10 +405,8 @@ function Addvideodata() {
       <br/>
       <button type="submit" onClick={() =>{
         buttonClick = true
-
       }}>Upload Video</button>
       <br/>
-      
     </form>
     
   );
