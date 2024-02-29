@@ -5,7 +5,7 @@ import '../styles/navbar.css';
 export const Navbar = () => {
   return (
     <div className="navbar">
-      <Link to='addvideodata'>
+      <Link to='uploadform'>
         <h3>Add Videos</h3>
       </Link>
       <Link to='scheduler'>
@@ -14,7 +14,7 @@ export const Navbar = () => {
       <Link to="theateroperator">
         <h3>View Playlist</h3>
       </Link>
-      <Link to="userresponse">
+      <Link to="userResponse">
         <h3>User Response</h3>
       </Link>
     </div>

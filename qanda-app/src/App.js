@@ -1,30 +1,34 @@
 // App.js
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import  Scheduler  from './component/Scheduler';
-import { Theateroperator } from './component/Theateroperator';
-import  Addvideodata  from './component/Addvideodata';
-import { Navbar } from './component/Navbar';
-import { VideoPlayer } from './component/VideoPlayer';
-import { UserResponse } from './component/UserResponce';
+import Scheduler from './components/scheduler.js';
+import { Navbar } from './components/navbar.js';
+import { Theateroperator } from './components/theaterOperator.js';
+import { VideoPlayer } from './components/videoPlayer.js';
+import UploadForm from './components/videoUploadForm.js';
+import { UserResponse } from './components/userResponse.js';
 
-function App() { 
+
+
+function App() {
+  
   return (
-<>
-<BrowserRouter>
-<Navbar />
+    <div className='maindiv'>
+      <BrowserRouter>
+      <Navbar />
       <Routes>
-          <Route path="addvideodata" element={<Addvideodata />} />   
+          <Route path="uploadform" element={<UploadForm />} />   
           <Route path="scheduler" element={<Scheduler />} />
           <Route path="theateroperator" element={<Theateroperator />} />
           <Route path="video-player" element={<VideoPlayer />} />
-          <Route path="userresponse" element={<UserResponse />} />
+          <Route path="userResponse" element={<UserResponse />} />
+
       </Routes>
     </BrowserRouter>
-</>
 
-   );
+    </div>
+  );
 }
 
 

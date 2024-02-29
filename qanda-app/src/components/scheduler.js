@@ -1,6 +1,9 @@
 // Scheduler.js
 import React, { useState, useEffect } from 'react';
 import '../styles/scheduler.css'; // Ensure the correct path to your CSS file
+import config from '../config';  // Adjust the path accordingly
+const apiUrl = `${config.apiBaseUrl}`;
+
 
 const Scheduler = () => {
   const [videos, setVideos] = useState([]);
@@ -9,12 +12,14 @@ const Scheduler = () => {
   const [errors, setErrors] = useState(Array(3).fill(null));
   const [schedulerCount, setSchedulerCount] = useState(3); // State to control the number of schedulers
   const slotLimit = 60; // Slot limit in minutes
+  const [urlAndVideoID, setUrlAndVideoID] = useState(Array(30).fill(Array(15).fill({})).map(innerArray => [...innerArray]));
 
   const [theaters, setTheaters] = useState([
     { theater_id: 1, theater_name: 'Theater A' },
     { theater_id: 2, theater_name: 'Theater B' },
     { theater_id: 3, theater_name: 'Theater C' },
     { theater_id: 4, theater_name: 'Theater D' },
+
   ]);
 
   const [selectedTheater, setSelectedTheater] = useState('');
@@ -22,9 +27,10 @@ const Scheduler = () => {
   useEffect(() => {
     if(selectedTheater){
     // Fetch videos from the backend API using fetch
-    fetch('http://192.168.0.113:8010/api/allvideos')
+    fetch(`${apiUrl}/api/allVideos`)
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         setVideos(data);
       })
       .catch(error => {
@@ -95,9 +101,11 @@ const handleSaveClick = async (schedulerIndex) => {
       slot_index: schedulerIndex + 1,
       video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({[`videoLink`]: videoLink.replace(/\\/g, '/') || null, })),
   };
+
 console.log(schedulerData);
+
  try {
-    const response = await fetch('http://192.168.0.113:8010/api/saveSchedulerData', {
+    const response = await fetch(`${apiUrl}/api/saveSchedulerData`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +113,7 @@ console.log(schedulerData);
       body: JSON.stringify(schedulerData),
     });
     if (response.ok) {
-      const data = await response.json();
+      const data = response.json();
       alert('Data saved successfully:', data);
     } else {
       console.error('Error saving data:', response.statusText);
