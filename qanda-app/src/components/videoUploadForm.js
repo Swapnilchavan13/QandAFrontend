@@ -200,7 +200,7 @@ function UploadForm() {
     }
     console.log("final form data:",formData);
 
-     try {
+    try {
       const response = await fetch(`${apiUrl}/api/uploadVideo`, {
         method: 'POST',
         headers: {
@@ -208,8 +208,38 @@ function UploadForm() {
         },
         body: JSON.stringify(formData),
       });
+  
       if (response.ok) {
         alert('Data saved successfully!');
+        // Reset the form fields
+        setFormData({
+          videoURL: '',
+          imageURL: '',
+          dateAndTime: '',
+          questionType: '',
+          videoType: '',
+          questionDesc: '',
+          questionTypeID: '',
+          option: '',
+          padX: '',
+          padY: '',
+          text: '',
+          x: '',
+          y: '',
+          colours: '',
+          duration: '',
+          optionOne: '',
+          brandLogo: '',
+          optionTwo: '',
+          optionThree: '',
+          optionFour: '',
+          optionFive: '',
+          adStartTime: '',
+          correctOption: '',
+          brandName: '',
+          contactPersonName: '',
+          contactPersonNumber: '',
+        });
       } else {
         console.error('Error uploading data');
         alert('Error uploading data!');
@@ -217,7 +247,6 @@ function UploadForm() {
     } catch (error) {
       console.error('Error:', error);
     }
-    
   };
 
   return (
@@ -231,8 +260,7 @@ function UploadForm() {
       </div>
       <span className="file-name">{formData.videoURL}</span>
     </label>
-      <br/>
-      <br/> 
+     
       <label>
         <span>Image URL:</span>
       <div className="custom-file-input">
@@ -241,53 +269,44 @@ function UploadForm() {
       </div>
       <span className="file-name">{formData.imageURL}</span>
       </label>
-
-      <br/>
-      <br/>     
+    
       <label>
         Date:
         <input type="datetime-local" name="dateAndTime" value={formData.dateAndTime} onChange={handleChange} />
       </label>
-      <br/>
-      <br/>
+     
       <label>
+        Video Type:
+        <select name="videoType" value={formData.videoType} onChange={handleChange}>
+          <option value="Content">Content</option>
+          <option value="Advertisement">Advertisement</option>
+        </select>
+      </label>
+         
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Brand Name:
         <input type="text" name="brandName" value={formData.brandName} onChange={handleChange} />
       </label>
-      <br />
-      <br/>    
-       <label>
+         
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
        <span>Brand Logo:</span>
        <div className="custom-file-input">
       <input type="file" accept="image/*" onChange={handleBrandLogoChange} />
       Choose a File
       </div>
       </label>
-      <br/>
-      <br/> 
-      <label>
+       
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Brand Contact Name:
         <input type="text" name="contactPersonName" value={formData.contactPersonName} onChange={handleChange} />
       </label>
-      <br />
-      <br/> 
-      <label>
+      
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Brand Contact Phone:
         <input type="text" name="contactPersonNumber" value={formData.contactPersonNumber} onChange={handleChange} />
       </label>
-      <br />
-      <br/>      
-      <label>
-        Video Type:
-         <input type="text" list="options" name="videoType" value={formData.videoType} onChange={handleChange}/>
-          <datalist id="options">
-            <option value="Advertisement" />
-            <option value="Content" />
-          </datalist>
-      </label>
-      <br />
-      <br/>      
-      <label>
+            
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Question Type:
         <input type="text" list="options1" name="questionType" value={formData.questionType} onChange={handleChange}/>
           <datalist id="options1">
@@ -295,10 +314,9 @@ function UploadForm() {
             <option value="Text" />
           </datalist>
       </label>
-      <br />
-      <br/>      
+           
    
-      <label>
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Question:
         <input
           type="text"
@@ -307,15 +325,13 @@ function UploadForm() {
           onChange={handleChange}
         />
       </label> 
-      <br />
-      <br />
+     
       <label>
       Duration ( in minutes ):
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
-      <br />
-      <br/> 
-      <label>
+    
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Number of Options:
         <select
           name="numOptions"
@@ -329,14 +345,14 @@ function UploadForm() {
           ))}
         </select>
       </label> 
-      <br />
-      <br/>        
-      <label>
+            
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Option 1:
         <input type="text" name="optionOne" value={formData.optionOne} onChange={handleChange} />
       </label>
-      <br />
-      <br/>
+      
+      <div style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
       <label style={{ display: numOptions > 1 ? 'block' : 'none' }}>
         Option 2:
         <input
@@ -344,10 +360,9 @@ function UploadForm() {
           name="optionTwo"
           value={formData.optionTwo}
           onChange={handleChange}
-        />
+          />
       </label>
-      <br />
-      <br/>
+     
 
       <label style={{ display: numOptions > 2 ? 'block' : 'none' }}>
         Option 3:
@@ -356,10 +371,9 @@ function UploadForm() {
           name="optionThree"
           value={formData.optionThree}
           onChange={handleChange}
-        />
+          />
       </label>
-      <br />
-      <br/>
+     
 
       <label style={{ display: numOptions > 3 ? 'block' : 'none' }}>
         Option 4:
@@ -370,8 +384,7 @@ function UploadForm() {
           onChange={handleChange}
         />
       </label>
-      <br />
-      <br/>
+    
 
       <label style={{ display: numOptions > 4 ? 'block' : 'none' }}>
         Option 5:
@@ -380,23 +393,23 @@ function UploadForm() {
           name="optionFive"
           value={formData.optionFive}
           onChange={handleChange}
-        />
+          />
       </label>
-      <br/>
+          </div>
+      
 
-      <label>
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
       Correct Option:
         <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
       </label>
-      <br />
-      <br/>
-      <label>
+     
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
       Seconds when AD starts:
         <input type="text" name="adStartTime" value={formData.adStartTime} onChange={handleChange} />
       </label>
-      <br/>
-      <br/>
-      <label>
+      
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
         Option Type:
         <select
           name="option"
@@ -411,9 +424,8 @@ function UploadForm() {
           ))}
         </select>
       </label>
-      <br />
-      <br />
-      <label>
+      
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Padx:
         <input
           type="text"
@@ -423,9 +435,9 @@ function UploadForm() {
           readOnly
         />
       </label>
-      <br />
-      <br/>  
-      <label>
+        
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
         Pady:
         <input
           type="text"
@@ -435,9 +447,8 @@ function UploadForm() {
           readOnly
         />
       </label>
-      <br />
-      <br/>     
-      <label>
+       
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Text:
         <input
           type="text"
@@ -447,9 +458,8 @@ function UploadForm() {
           readOnly
         />
       </label>
-      <br />
-      <br/> 
-      <label>
+      
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         X:
         <input
           type="text"
@@ -459,9 +469,8 @@ function UploadForm() {
           readOnly
         />
       </label>
-      <br />
-      <br/> 
-      <label>
+      
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Y:
         <input
           type="text"
@@ -471,24 +480,23 @@ function UploadForm() {
           readOnly
         />
       </label>
-      <br />
-      <br/> 
-      <label>
+     
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Color:
         <input
           type="text"
           name="colours"
           value={formData.colours}
           onChange={handleoption}
+          
           readOnly
         />
       </label>
-      <br />
-      <br/> 
+      
       <button type="submit" onClick={() =>{
         buttonClick = true
       }}>Upload Video</button>
-      <br/>
+      
     </form>
   );
 }
