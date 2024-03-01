@@ -147,8 +147,28 @@ function UploadForm() {
 
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(formData); 
+
+    const { name, value } = e.target;
+
+    // Adding validation for contactPersonNumber
+    if (name === 'contactPersonNumber') {
+      // Remove any non-numeric characters from the input
+      const numericValue = value.replace(/\D/g, '');
+
+      // Validate if the numericValue is exactly 10 digits
+      if (numericValue.length <= 10) {
+        setFormData({
+          ...formData,
+          [name]: numericValue,
+        });
+      }
+    } else {
+      // For other fields, simply update the state
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleVideoChange = (e) => {
@@ -172,7 +192,13 @@ function UploadForm() {
   const handleSubmit = async (e) => {
     console.log('hello')
     e.preventDefault();
-      console.log("final form data:",formData);
+    
+    
+    if (formData.contactPersonNumber.length !== 10) {
+      alert('Please enter a valid 10-digit contact number.');
+      return;
+    }
+    console.log("final form data:",formData);
 
      try {
       const response = await fetch(`${apiUrl}/api/uploadVideo`, {
