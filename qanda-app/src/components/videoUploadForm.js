@@ -35,6 +35,22 @@ function UploadForm() {
     contactPersonNumber:''
   });
 
+  const [numOptions, setNumOptions] = useState(2);
+
+  const handleNumOptionsChange = (e) => {
+    const selectedNumOptions = parseInt(e.target.value, 10);
+    setNumOptions(selectedNumOptions);
+    setFormData({
+      ...formData,
+      optionOne: '',
+      optionTwo: '',
+      optionThree: '',
+      optionFour: '',
+      optionFive: '',
+      correctOption: '',
+    });
+  };
+
   const [showAlert, setShowAlert] = useState(false);
   var showAlertMessage = "";
   var buttonClick = false;
@@ -272,37 +288,76 @@ function UploadForm() {
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
       <br />
-      <br/>      
+      <br/> 
       <label>
-      Option 1:
+        Number of Options:
+        <select
+          name="numOptions"
+          value={numOptions}
+          onChange={handleNumOptionsChange}
+        >
+          {[2, 3, 4, 5].map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label> 
+      <br />
+      <br/>        
+      <label>
+        Option 1:
         <input type="text" name="optionOne" value={formData.optionOne} onChange={handleChange} />
       </label>
       <br />
       <br/>
-      <label>
-      Option 2:
-        <input type="text" name="optionTwo" value={formData.optionTwo} onChange={handleChange} />
+      <label style={{ display: numOptions > 1 ? 'block' : 'none' }}>
+        Option 2:
+        <input
+          type="text"
+          name="optionTwo"
+          value={formData.optionTwo}
+          onChange={handleChange}
+        />
       </label>
       <br />
       <br/>
-      <label>
-      Option 3:
-        <input type="text" name="optionThree" value={formData.optionThree} onChange={handleChange} />
+
+      <label style={{ display: numOptions > 2 ? 'block' : 'none' }}>
+        Option 3:
+        <input
+          type="text"
+          name="optionThree"
+          value={formData.optionThree}
+          onChange={handleChange}
+        />
       </label>
       <br />
       <br/>
-      <label>
-      Option 4:
-        <input type="text" name="optionFour" value={formData.optionFour} onChange={handleChange} />
+
+      <label style={{ display: numOptions > 3 ? 'block' : 'none' }}>
+        Option 4:
+        <input
+          type="text"
+          name="optionFour"
+          value={formData.optionFour}
+          onChange={handleChange}
+        />
       </label>
       <br />
       <br/>
-      <label>
-      Option 5:
-        <input type="text" name="optionFive" value={formData.optionFive} onChange={handleChange} />
+
+      <label style={{ display: numOptions > 4 ? 'block' : 'none' }}>
+        Option 5:
+        <input
+          type="text"
+          name="optionFive"
+          value={formData.optionFive}
+          onChange={handleChange}
+        />
       </label>
-      <br />
       <br/>
+
       <label>
       Correct Option:
         <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />

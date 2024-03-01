@@ -68,20 +68,16 @@ export const VideoPlayer = () => {
         togglefs();
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
-
   useEffect(() => {
     // Update the video source when currentIndex changes
     if (videoRef.current) {
       videoRef.current.src = videoLinks[currentIndex];
-
        videoRef.current.load(); // Reload the video element
     }
   }, [currentIndex, videoLinks]);

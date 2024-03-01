@@ -13,7 +13,7 @@ export const UserResponse = () => {
     try {
       const response =  await fetch(`${apiUrl}/api/getUserResponse`);
       const data =   await response.json();
-      console.log("result", (data));
+      // console.log("result", (data));
 
       setUserResponse(data.result);
     } catch (error) {
