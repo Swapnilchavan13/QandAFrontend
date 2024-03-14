@@ -1,5 +1,4 @@
 /* videoUploadForm.css */
-
 .video-form {
   max-width: 1000px;
   margin: 0 auto;
@@ -89,4 +88,36 @@ button:hover {
   button {
     padding: 10px;
   }
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.checkbox-input {
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+/* Style for unchecked state */
+.checkbox-label:not(.isChecked) {
+  color: #333; /* Change the color to your preference */
+}
+
+/* Style for checked state */
+.checkbox-label.isChecked {
+  color: #00aaff; /* Change the color to your preference */
+  font-weight: bold;
+}
+
+/* Optional: Style for the checkbox itself */
+.checkbox-input {
+  width: 20px;
+  height: 20px;
 }

@@ -58,7 +58,7 @@ export const Theateroperator = () => {
     }
 
 
-    console.log("typeof renderSchedulerPlaylist schedulerData ",typeof(schedulerData));
+    console.log("typeof renderSchedulerPlaylist schedulerData ",typeof(flattenedSchedulerData));
   
     //swapnil code eliminate duplicate data
     // Flatten the nested arrays

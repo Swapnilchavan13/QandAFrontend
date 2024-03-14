@@ -8,6 +8,7 @@ import { Theateroperator } from './components/theaterOperator.js';
 import { VideoPlayer } from './components/videoPlayer.js';
 import UploadForm from './components/videoUploadForm.js';
 import { UserResponse } from './components/userResponse.js';
+import { Demo } from './components/demo.js';
 
 
 
@@ -18,6 +19,8 @@ function App() {
       <BrowserRouter>
       <Navbar />
       <Routes>
+      <Route path="" element={<Demo />} />   
+
           <Route path="uploadform" element={<UploadForm />} />   
           <Route path="scheduler" element={<Scheduler />} />
           <Route path="theateroperator" element={<Theateroperator />} />

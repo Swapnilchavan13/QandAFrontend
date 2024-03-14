@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import '../styles/videoUploadForm.css';
 import config from '../config';  // Adjust the path accordingly
+import { Demo } from "./demo";
 
 const apiUrl = `${config.apiBaseUrl}`;
 
@@ -59,11 +60,11 @@ function UploadForm() {
   
   const optionMapping = {
     2: [
-      {"padx1":177,"padx2":192}, 
-      {"pady1":60,"pady2":54,}, 
-      {text: "font_style_45"}, 
+      {"padx1":194,"padx2":206}, 
+      {"pady1":65,"pady2":68,}, 
+      {text: "Helvetica 38"}, 
       {"x1":0,"x2":0},
-      {"y1":424,"y2":617},
+      {"y1":300,"y2":502},
       {color:"red"}
     ],
 
@@ -71,28 +72,35 @@ function UploadForm() {
     {"padx1":177,"padx2":192}, 
     {"pady1":60,"pady2":54}, 
     {"x1":0,"x2":0},
-    {text: "font_style_45"}, 
+    {text: "Helvetica 38"}, 
     {"y1":424,"y2":617},
     {color:"red"}
   ],    
 
     4: [
-      {"padx1":57,"padx2":4, "padx3":64, "padx4":44},
-      {"pady1":27, "pady2":27, "pady3":27, "pady4":27},
-      {text:"font_style_45"},
+      {"padx1":130,"padx2":74, "padx3":39, "padx4":116},
+      {"pady1":23, "pady2":23, "pady3":23, "pady4":23},
+      {text:"Helvetica 38"},
       {"x1":0,"x2":0,"x3":0,"x4":0},
-      {"y1":291,"y2":418,"y3":545,"y4":672},
+      {"y1":257,"y2":369,"y3":481,"y4":593},
       {color:"red"}
-],
+   ],
 
 5: [
-  {"padx1":20,"padx2":20, "padx3":45, "padx4":128, "padx5":39},
-  {"pady1":22, "pady2":22, "pady3":20, "pady4":22, "pady5":17},
-  {text:"font_style_45"},
+  {"padx1":99,"padx2":81, "padx3":108, "padx4":157, "padx5":97},
+  {"pady1":15, "pady2":17, "pady3":20, "pady4":17, "pady5":17},
+  {text:"Helvetica 38"},
   {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
-  {"y1":230,"y2":345,"y3":462,"y4":575, "y5":692},
+  {"y1":197,"y2":295,"y3":396,"y4":506, "y5":606},
   {color:"red"}
 ],
+
+};
+
+const [isChecked, setChecked] = useState(false);
+
+const handleCheckboxChange = () => {
+  setChecked(!isChecked);
 };
 
   const handleQuestionTypeIDChange = (e) => {
@@ -249,6 +257,7 @@ function UploadForm() {
     }
   };
 
+
   return (
     <form className="video-form" onSubmit={handleSubmit}>
       <h1>Add Video Data</h1>
@@ -282,10 +291,43 @@ function UploadForm() {
           <option value="Advertisement">Advertisement</option>
         </select>
       </label>
+
+      <div className="checkbox-container">
+      <h4>Choose Option:</h4>
+  <label className={`checkbox-label ${isChecked ? 'isChecked' : ''}`}>
+    <input
+      type="checkbox"
+      checked={isChecked}
+      onChange={handleCheckboxChange}
+      className="checkbox-input"
+    />
+    Add New Brand
+  </label>
+
+  <label className={`checkbox-label ${!isChecked ? 'isChecked' : ''}`}>
+    <input
+      type="checkbox"
+      checked={!isChecked}
+      onChange={handleCheckboxChange}
+      className="checkbox-input"
+    />
+    Choose From Existing Brand
+  </label>
+</div>
+
          
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-        Brand Name:
-        <input type="text" name="brandName" value={formData.brandName} onChange={handleChange} />
+  <label style={{ display: formData.videoType === "Advertisement" || isChecked ? 'block' : 'none' }}>
+  Brand Name:
+  <input type="text" name="brandName" value={formData.brandName} onChange={handleChange} />
+</label>
+
+
+<label style={{ display: formData.videoType === "Advertisement" || !isChecked ? 'block' : 'none' }}>
+        Brand Name Dropdown:
+        <select name="brandName" value={formData.brandName} onChange={handleChange}>
+          <option value="Suger">Suger</option>
+          <option value="Nike">Nike</option>
+        </select>
       </label>
          
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
@@ -407,9 +449,12 @@ function UploadForm() {
       Seconds when AD starts:
         <input type="text" name="adStartTime" value={formData.adStartTime} onChange={handleChange} />
       </label>
+
+<div style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+      <Demo />
+</div>
       
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-
         Option Type:
         <select
           name="option"
@@ -488,7 +533,6 @@ function UploadForm() {
           name="colours"
           value={formData.colours}
           onChange={handleoption}
-          
           readOnly
         />
       </label>
