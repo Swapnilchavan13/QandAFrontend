@@ -102,7 +102,7 @@ const handleSaveClick = async (schedulerIndex) => {
       video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => ({[`videoLink`]: videoLink.replace(/\\/g, '/') || null, })),
   };
 
-console.log(schedulerData);
+// console.log(schedulerData);
 
  try {
     const response = await fetch(`${apiUrl}/api/saveSchedulerData`, {
@@ -143,7 +143,7 @@ const renderDropdowns = (startDate, schedulerIndex) => {
   ));
 };
 
-  console.log(selectedSchedules)
+  // console.log(selectedSchedules)
 
   const renderSchedulers = () => {
     if(videos.length===0)

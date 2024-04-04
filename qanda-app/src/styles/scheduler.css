@@ -1,10 +1,13 @@
 /* scheduler.css */
+
+
+
 .scheduler-wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    justify-content: space-between;
-  }
-  
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: space-between;
+}
+
   .scheduler-container {
     width: 85%; /* Adjust as needed */
     padding: 20px;
