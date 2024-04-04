@@ -30,10 +30,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
-
- 
-
 // Set up your routes
 app.post('/upload', upload.single('video'), (req, res) => {
     const { title } = req.body;
