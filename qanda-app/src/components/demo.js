@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/demo.css'; // Import your CSS file
 
-export const Demo = () => {
+export const Demo = ({ saveDataToUploadForm }) => {
   const [option, setOption] = useState(2);
   const [formData, setFormData] = useState({});
 
@@ -12,8 +12,10 @@ export const Demo = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData);
-  };
+    console.log("Data From Demo" + formData);
+    // Call the function passed from UploadForm to save data
+    saveDataToUploadForm(formData);
+  };  
 
   const handleInputChange = (key, value) => {
     setFormData({ ...formData, [key]: value });

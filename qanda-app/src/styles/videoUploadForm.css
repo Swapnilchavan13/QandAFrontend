@@ -1,123 +1,137 @@
-/* videoUploadForm.css */
+
 .video-form {
-  max-width: 1000px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f5f5f5;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
-label {
+.video-form label {
   display: block;
-  margin-bottom: 15px;
-  font-weight: bold;
-  margin-top: 60px;
+  margin-bottom: 10px;
 }
 
-label span {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-}
-
-input[type="file"] {
-  display: none; /* Hide the default file input */
-}
-
-.custom-file-input {
-  background-color: #c7c5cc;
-  color: black;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.custom-file-input:hover {
-  background-color: #aeb6af;
-}
-
-.file-name {
-  margin-top: 5px;
-}
-
-input,
-select {
+.video-form input {
   width: 100%;
   padding: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   box-sizing: border-box;
 }
 
-button {
+.video-form button {
   background-color: #4caf50;
   color: white;
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-button:hover {
+.video-form button:hover {
   background-color: #45a049;
 }
 
-.alert {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 15px;
-}
+/*new code */
+
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .video-form {
-    padding: 15px;
-  }
-
-  input,
-  select,
-  button {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  button {
-    padding: 10px;
-  }
+.video-form {
+  padding: 15px;
 }
 
+input,
+select,
+button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px;
+}
+}
+
+label {
+display: block;
+margin-bottom: 15px;
+font-weight: bold;
+}
+label span {
+font-weight: bold;
+display: block;
+margin-bottom: 5px;
+}
+input[type="file"] {
+display: none; /* Hide the default file input */
+}
+.custom-file-input {
+background-color: #c7c5cc;
+color: black;
+padding: 10px;
+border: none;
+border-radius: 5px;
+text-align: center;
+cursor: pointer;
+width:40%;
+height:30%;
+}
+.custom-file-input:hover {
+background-color: #aeb6af;
+}
+.file-name {
+margin-top: 5px;
+}
+input,
+select {
+width: 100%;
+padding: 8px;
+margin-bottom: 15px;
+box-sizing: border-box;
+}
+button {
+background-color: #4caf50;
+color: white;
+padding: 10px 15px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+button:hover {
+background-color: #45a049;
+}
+
+
 .checkbox-container {
-  display: flex;
-  align-items: center;
+display: flex;
+align-items: center;
 }
 
 .checkbox-label {
-  margin-right: 10px;
-  font-size: 16px;
+margin-right: 10px;
+font-size: 16px;
 }
 
 .checkbox-input {
-  margin-right: 5px;
-  cursor: pointer;
+margin-right: 5px;
+cursor: pointer;
 }
 
 /* Style for unchecked state */
 .checkbox-label:not(.isChecked) {
-  color: #333; /* Change the color to your preference */
+color: #333; /* Change the color to your preference */
 }
 
 /* Style for checked state */
 .checkbox-label.isChecked {
-  color: #00aaff; /* Change the color to your preference */
-  font-weight: bold;
+color: #00aaff; /* Change the color to your preference */
+font-weight: bold;
 }
 
 /* Optional: Style for the checkbox itself */
 .checkbox-input {
-  width: 20px;
-  height: 20px;
+width: 20px;
+height: 20px;
 }

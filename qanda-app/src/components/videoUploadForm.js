@@ -1,26 +1,48 @@
 import { useState, useEffect } from "react";
 import '../styles/videoUploadForm.css';
 import config from '../config';  // Adjust the path accordingly
-import { Demo } from "./demo";
+// import { Demo } from "./demo";
 
 const apiUrl = `${config.apiBaseUrl}`;
 
 function UploadForm() {
   const [formData, setFormData] = useState({
 
-    videoURL: '',
+    adVideoLink: '',
     imageURL: '',
     dateAndTime:'',
     questionType: '',
     videoType:'',
-    questionDesc:'',
+    questionDescription:'',
     questionTypeID: '',
     option: '',
-    padX:'',
+    padx1:'', 
+    padx2:'',
+    padx3:'',  
+    padx4:'',
+    padx5:'',
+    pady1:'',
+    pady2:'',
+    pady3:'', 
+    pady4:'', 
+    pady5:'', 
     padY:'',
-    text:'',
-    x:'',
-    y:'',
+    text1:'',
+    text2:'',
+    text3:'',
+    text4:'',
+    text5:'',
+    x1:'',
+    x2:'',
+    x3:'',
+    x4:'',
+    x5:'',
+    y1:'',
+    y2:'',
+    y3:'',
+    y4:'',
+    y5:'',
+    color:'',
     colours:'',
     duration:'',
     optionOne:'',
@@ -30,11 +52,26 @@ function UploadForm() {
     optionFive:'',
     adStartTime:'',
     correctOption:'',
-    brandName:'',
-    brandLogo:'',
-    contactPersonName:'',
-    contactPersonNumber:''
+    // brandName:'',
+    // brandLogo:'',
+    // contactPersonName:'',
+    // contactPersonNumber:''
   });
+  const [brandDetails,setBrandDetails] = useState([]);
+  useEffect(() => {
+    fetch(`${apiUrl}/getBrandDetails`)
+      .then(response => response.json())
+      .then(results => {
+        setBrandDetails(results.brandDetails);
+      })
+      .catch(error => {
+        console.error('Error fetching videos:', error);
+      });
+    },[]);
+
+  const [option, setOption] = useState(2);
+  const [totalOptionNumber, setTotalOptionNumber] = useState(2);
+
 
   const [numOptions, setNumOptions] = useState(2);
 
@@ -85,23 +122,27 @@ function UploadForm() {
       {"y1":257,"y2":369,"y3":481,"y4":593},
       {color:"red"}
    ],
+   5.1: [
+     {"padx1":99,"padx2":81, "padx3":108, "padx4":157, "padx5":97},
+     {"pady1":15, "pady2":17, "pady3":20, "pady4":17, "pady5":17},
+     {text:"Helvetica 38"},
+     {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
+     {"y1":197,"y2":295,"y3":396,"y4":506, "y5":606},
+     {color:"red"}
+   ],
+   5.2: [
+     {"padx1":156,"padx2":198,"padx3":195,"padx4":11,"padx5":136},
+     {"pady1":15,"pady2":17,"pady3":22,"pady4":20,"pady5":17},
+     {"text":"Helvetica 34"},
+     {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
+     {"y1":197,"y2":295,"y3":396,"y4":506,"y5":606},
+     {"color":"red"}
+   ]};
 
-5: [
-  {"padx1":99,"padx2":81, "padx3":108, "padx4":157, "padx5":97},
-  {"pady1":15, "pady2":17, "pady3":20, "pady4":17, "pady5":17},
-  {text:"Helvetica 38"},
-  {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
-  {"y1":197,"y2":295,"y3":396,"y4":506, "y5":606},
-  {color:"red"}
-],
-
-};
-
-const [isChecked, setChecked] = useState(false);
-
-const handleCheckboxChange = () => {
-  setChecked(!isChecked);
-};
+   const [isBrandExisting, setBrandExisting] = useState(false);
+   const handleCheckboxChange = () => {
+     setBrandExisting(!isBrandExisting);
+   };
 
   const handleQuestionTypeIDChange = (e) => {
     const selectedQuestionTypeID = e.target.value;
@@ -155,33 +196,24 @@ const handleCheckboxChange = () => {
 
 
   const handleChange = (e) => {
-
+    setOption(parseInt(e.target.value));
     const { name, value } = e.target;
+  
+    // For all fields except contactPersonNumber, simply update the state
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  
 
-    // Adding validation for contactPersonNumber
-    if (name === 'contactPersonNumber') {
-      // Remove any non-numeric characters from the input
-      const numericValue = value.replace(/\D/g, '');
-
-      // Validate if the numericValue is exactly 10 digits
-      if (numericValue.length <= 10) {
-        setFormData({
-          ...formData,
-          [name]: numericValue,
-        });
-      }
-    } else {
-      // For other fields, simply update the state
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  const handleInputChange = (key, value) => {
+    setFormData({ ...formData, [key]: value });
   };
 
   const handleVideoChange = (e) => {
     const myArray = ( e.target.value).split("\\");
-    setFormData({ ...formData, 'videoURL' :  myArray[2]});
+    setFormData({ ...formData, 'adVideoLink' :  myArray[2]});
     console.log(myArray[2]);
     console.log(formData)
   }
@@ -192,20 +224,10 @@ const handleCheckboxChange = () => {
     setFormData({ ...formData, 'imageURL' :  myArray[2]});
   }
 
-  const handleBrandLogoChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({ ...formData, brandLogo: file });
-  };  
-
   const handleSubmit = async (e) => {
     console.log('hello')
-    e.preventDefault();
-    
-    
-    if (formData.contactPersonNumber.length !== 10) {
-      alert('Please enter a valid 10-digit contact number.');
-      return;
-    }
+    e.preventDefault(); 
+   
     console.log("final form data:",formData);
 
     try {
@@ -220,34 +242,7 @@ const handleCheckboxChange = () => {
       if (response.ok) {
         alert('Data saved successfully!');
         // Reset the form fields
-        setFormData({
-          videoURL: '',
-          imageURL: '',
-          dateAndTime: '',
-          questionType: '',
-          videoType: '',
-          questionDesc: '',
-          questionTypeID: '',
-          option: '',
-          padX: '',
-          padY: '',
-          text: '',
-          x: '',
-          y: '',
-          colours: '',
-          duration: '',
-          optionOne: '',
-          brandLogo: '',
-          optionTwo: '',
-          optionThree: '',
-          optionFour: '',
-          optionFive: '',
-          adStartTime: '',
-          correctOption: '',
-          brandName: '',
-          contactPersonName: '',
-          contactPersonNumber: '',
-        });
+       
       } else {
         console.error('Error uploading data');
         alert('Error uploading data!');
@@ -255,6 +250,94 @@ const handleCheckboxChange = () => {
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const renderFormFields = () => {
+    const fields = [];
+    const optionData = {
+      2: [
+        { name: "padx1", placeholder: "Pad X1" },
+        { name: "padx2", placeholder: "Pad X2" },
+        { name: "pady1", placeholder: "Pad Y1" },
+        { name: "pady2", placeholder: "Pad Y2" },
+        { name: "text1", placeholder: "Text 1 Font" },
+        { name: "text2", placeholder: "Text 2 Font" },
+        { name: "x1", placeholder: "X1" },
+        { name: "x2", placeholder: "X2" },
+        { name: "color", placeholder: "Color" }
+      ],
+      4: [
+        { name: "padx1", placeholder: "Pad X1" },
+        { name: "padx2", placeholder: "Pad X2" },
+        { name: "padx3", placeholder: "Pad X3" },
+        { name: "padx4", placeholder: "Pad X4" },
+        { name: "pady1", placeholder: "Pad Y1" },
+        { name: "pady2", placeholder: "Pad Y2" },
+        { name: "pady3", placeholder: "Pad Y3" },
+        { name: "pady4", placeholder: "Pad Y4" },
+        { name: "text1", placeholder: "Text 1 Font" },
+        { name: "text2", placeholder: "Text 2 Font" },
+        { name: "text3", placeholder: "Text 3 Font" },
+        { name: "text4", placeholder: "Text 4 Font" },
+
+        { name: "x1", placeholder: "X1" },
+        { name: "x2", placeholder: "X2" },
+        { name: "x3", placeholder: "X3" },
+        { name: "x4", placeholder: "X4" },
+        { name: "y1", placeholder: "Y1" },
+        { name: "y2", placeholder: "Y2" },
+        { name: "y3", placeholder: "Y3" },
+        { name: "y4", placeholder: "Y4" },
+        { name: "color", placeholder: "Color" }
+      ],
+      5: [
+        { name: "padx1", placeholder: "Pad X1" },
+        { name: "padx2", placeholder: "Pad X2" },
+        { name: "padx3", placeholder: "Pad X3" },
+        { name: "padx4", placeholder: "Pad X4" },
+        { name: "padx5", placeholder: "Pad X5" },
+        { name: "pady1", placeholder: "Pad Y1" },
+        { name: "pady2", placeholder: "Pad Y2" },
+        { name: "pady3", placeholder: "Pad Y3" },
+        { name: "pady4", placeholder: "Pad Y4" },
+        { name: "pady5", placeholder: "Pad Y5" },
+        { name: "text1", placeholder: "Text 1 Font" },
+        { name: "text2", placeholder: "Text 2 Font" },
+        { name: "text3", placeholder: "Text 3 Font" },
+        { name: "text4", placeholder: "Text 4 Font" },
+        { name: "text5", placeholder: "Text 5 Font" },
+
+        { name: "x1", placeholder: "X1" },
+        { name: "x2", placeholder: "X2" },
+        { name: "x3", placeholder: "X3" },
+        { name: "x4", placeholder: "X4" },
+        { name: "x5", placeholder: "X5" },
+        { name: "y1", placeholder: "Y1" },
+        { name: "y2", placeholder: "Y2" },
+        { name: "y3", placeholder: "Y3" },
+        { name: "y4", placeholder: "Y4" },
+        { name: "y5", placeholder: "Y5" },
+        { name: "color", placeholder: "Color" }
+      ]
+    };
+
+    const optionFields = optionData[option];
+    if (!optionFields) return null; // Add null check here
+
+    optionFields.forEach((field, index) => {
+      fields.push(
+        <div key={index}>
+          <h4>{field.placeholder}</h4>
+          <input
+            type="text"
+            value={formData[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
+            placeholder={field.placeholder}
+          />
+        </div>
+      );
+    });
+    return fields;
   };
 
 
@@ -267,7 +350,7 @@ const handleCheckboxChange = () => {
         <input type="file" onChange={handleVideoChange} />
         Choose a File
       </div>
-      <span className="file-name">{formData.videoURL}</span>
+      <span className="file-name">{formData.adVideoLink}</span>
     </label>
      
       <label>
@@ -287,74 +370,63 @@ const handleCheckboxChange = () => {
       <label>
         Video Type:
         <select name="videoType" value={formData.videoType} onChange={handleChange}>
+          <option value="" disabled selected>Select the video type</option>
           <option value="Content">Content</option>
           <option value="Advertisement">Advertisement</option>
         </select>
       </label>
 
-      <div className="checkbox-container">
-      <h4>Choose Option:</h4>
-  <label className={`checkbox-label ${isChecked ? 'isChecked' : ''}`}>
+      {/* <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
+        <h4>Choose Option:</h4><label className={`checkbox-label ${isBrandExisting ? 'isBrandExisting' : ''}`}>
     <input
       type="checkbox"
-      checked={isChecked}
+      checked={isBrandExisting}
       onChange={handleCheckboxChange}
       className="checkbox-input"
     />
     Add New Brand
-  </label>
-
-  <label className={`checkbox-label ${!isChecked ? 'isChecked' : ''}`}>
+  </label> 
+  <label className={`checkbox-label ${!isBrandExisting ? 'isBrandExisting' : ''}`}>
     <input
       type="checkbox"
-      checked={!isChecked}
+      checked={!isBrandExisting}
       onChange={handleCheckboxChange}
       className="checkbox-input"
     />
     Choose From Existing Brand
   </label>
-</div>
+</div> */}
 
-         
-  <label style={{ display: formData.videoType === "Advertisement" || isChecked ? 'block' : 'none' }}>
+{/*          
+<label style={{ display: formData.videoType === "Advertisement" && isBrandExisting ? 'block' : 'none' }}>
   Brand Name:
   <input type="text" name="brandName" value={formData.brandName} onChange={handleChange} />
-</label>
-
-
-<label style={{ display: formData.videoType === "Advertisement" || !isChecked ? 'block' : 'none' }}>
-        Brand Name Dropdown:
-        <select name="brandName" value={formData.brandName} onChange={handleChange}>
-          <option value="Suger">Suger</option>
-          <option value="Nike">Nike</option>
-        </select>
-      </label>
-         
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-       <span>Brand Logo:</span>
-       <div className="custom-file-input">
-      <input type="file" accept="image/*" onChange={handleBrandLogoChange} />
-      Choose a File
-      </div>
-      </label>
-       
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-        Brand Contact Name:
-        <input type="text" name="contactPersonName" value={formData.contactPersonName} onChange={handleChange} />
-      </label>
-      
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-        Brand Contact Phone:
-        <input type="text" name="contactPersonNumber" value={formData.contactPersonNumber} onChange={handleChange} />
-      </label>
+</label> */}
             
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-        Question Type:
-        <input type="text" list="options1" name="questionType" value={formData.questionType} onChange={handleChange}/>
-          <datalist id="options1">
-            <option value="Image" />
-            <option value="Text" />
-          </datalist>
+        Question Type:       
+          <select name="questionType" value={formData.questionType} aria-placeholder="" onChange={handleChange}>
+            <option value="" disabled selected>Select the question type</option>
+            <option value="Image" >Image</option>
+            <option value="Text" >Text</option>
+          </select>
+      </label>
+
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+        Question Type ID:
+        <select
+          name="questionTypeID"
+          value={formData.questionTypeID}
+          onChange={handleQuestionTypeIDChange}
+        >
+          <option value="">Select Question Type ID</option>
+          {[0, 1, 2, 3, 4].map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </select>
       </label>
            
    
@@ -362,8 +434,8 @@ const handleCheckboxChange = () => {
         Question:
         <input
           type="text"
-          name="questionDesc"
-          value={formData.questionDesc}
+          name="questionDescription"
+          value={formData.questionDescription}
           onChange={handleChange}
         />
       </label> 
@@ -373,39 +445,52 @@ const handleCheckboxChange = () => {
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
     
+      <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+  Option Type:
+  <select
+    name="option"
+    value={formData.option}
+    onChange={handleoption}
+  >
+    <option value="">Select Available Options</option>
+    {[2, 3, 4, 5].map((option) => (
+      <option key={option} value={option}>
+        {option}
+      </option>
+    ))}
+  </select>
+</label>
+
+      <br />
+      <br />
+
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Number of Options:
         <select
-          name="numOptions"
+          name="totalOptionNumber"
           value={numOptions}
-          onChange={handleNumOptionsChange}
-        >
+          onChange={handleNumOptionsChange}>
           {[2, 3, 4, 5].map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
           ))}
         </select>
-      </label> 
-            
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-        Option 1:
+      </label>
+   
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>         Option 1:
         <input type="text" name="optionOne" value={formData.optionOne} onChange={handleChange} />
       </label>
-      
-      <div style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-
-      <label style={{ display: numOptions > 1 ? 'block' : 'none' }}>
-        Option 2:
+     
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>         Option 2:
         <input
           type="text"
           name="optionTwo"
           value={formData.optionTwo}
           onChange={handleChange}
-          />
+        />
       </label>
-     
-
+      
       <label style={{ display: numOptions > 2 ? 'block' : 'none' }}>
         Option 3:
         <input
@@ -413,10 +498,9 @@ const handleCheckboxChange = () => {
           name="optionThree"
           value={formData.optionThree}
           onChange={handleChange}
-          />
+        />
       </label>
      
-
       <label style={{ display: numOptions > 3 ? 'block' : 'none' }}>
         Option 4:
         <input
@@ -426,8 +510,7 @@ const handleCheckboxChange = () => {
           onChange={handleChange}
         />
       </label>
-    
-
+      
       <label style={{ display: numOptions > 4 ? 'block' : 'none' }}>
         Option 5:
         <input
@@ -435,23 +518,34 @@ const handleCheckboxChange = () => {
           name="optionFive"
           value={formData.optionFive}
           onChange={handleChange}
-          />
-      </label>
-          </div>
-      
-
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-      Correct Option:
-        <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
+        />
       </label>
      
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
+     
+      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>       Correct Option ( ENTER nil WHEN THIS OPTION ISNT NEEDED FOR THE QUESTION GIVEN):
+        <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
+      </label>
+    
+      <label>
       Seconds when AD starts:
         <input type="text" name="adStartTime" value={formData.adStartTime} onChange={handleChange} />
       </label>
 
 <div style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-      <Demo />
+      {/* <Demo /> */}
+
+      <label htmlFor="option">Select Number of Buttons:</label>
+        <select id="option" value={option} onChange={handleChange}>
+          <option value={2}>2</option>
+          <option value={4}>4</option>
+          <option value={5}>5</option>
+        </select>
+        {renderFormFields()}
+
+
+
+
 </div>
       
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
