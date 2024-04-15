@@ -520,9 +520,7 @@ function UploadForm() {
           onChange={handleChange}
         />
       </label>
-     
-
-     
+          
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>       Correct Option ( ENTER nil WHEN THIS OPTION ISNT NEEDED FOR THE QUESTION GIVEN):
         <input type="text" name="correctOption" value={formData.correctOption} onChange={handleChange} />
       </label>
