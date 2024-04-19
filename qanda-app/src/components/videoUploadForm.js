@@ -52,7 +52,7 @@ function UploadForm() {
     optionFive:'',
     adStartTime:'',
     correctOption:'',
-    // brandName:'',
+    brandName:'',
     // brandLogo:'',
     // contactPersonName:'',
     // contactPersonNumber:''
@@ -70,14 +70,11 @@ function UploadForm() {
     },[]);
 
   const [option, setOption] = useState(2);
-  const [totalOptionNumber, setTotalOptionNumber] = useState(2);
+  // const [option, setoption] = useState(2);
 
-
-  const [numOptions, setNumOptions] = useState(2);
-
-  const handleNumOptionsChange = (e) => {
-    const selectedNumOptions = parseInt(e.target.value, 10);
-    setNumOptions(selectedNumOptions);
+  const handleoptionChange = (e) => {
+    const selectedoption = parseInt(e.target.value, 10);
+    setOption(selectedoption);
     setFormData({
       ...formData,
       optionOne: '',
@@ -231,7 +228,7 @@ function UploadForm() {
     console.log("final form data:",formData);
 
     try {
-      const response = await fetch(`${apiUrl}/api/uploadVideo`, {
+      const response = await fetch(`${apiUrl}/addContentData`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -376,7 +373,7 @@ function UploadForm() {
         </select>
       </label>
 
-      {/* <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+       {/* <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
 
         <h4>Choose Option:</h4><label className={`checkbox-label ${isBrandExisting ? 'isBrandExisting' : ''}`}>
     <input
@@ -396,13 +393,19 @@ function UploadForm() {
     />
     Choose From Existing Brand
   </label>
-</div> */}
+</div>  */}
 
-{/*          
-<label style={{ display: formData.videoType === "Advertisement" && isBrandExisting ? 'block' : 'none' }}>
+          
+<label style={{ display: formData.videoType === "Advertisement" && !isBrandExisting ? 'block' : 'none' }}>
   Brand Name:
-  <input type="text" name="brandName" value={formData.brandName} onChange={handleChange} />
-</label> */}
+  <select name="brandName" value={formData.brandName} onChange={handleChange}>
+    <option value="" disabled>Select brand</option>
+    {brandDetails.map(brand => (
+      <option key={brand.id} value={brand.brandName}>{brand.brandName}</option>
+    ))}
+  </select>
+</label>
+
             
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Question Type:       
@@ -445,7 +448,7 @@ function UploadForm() {
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
     
-      <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+      {/* <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
   Option Type:
   <select
     name="option"
@@ -459,7 +462,7 @@ function UploadForm() {
       </option>
     ))}
   </select>
-</label>
+</label> */}
 
       <br />
       <br />
@@ -468,9 +471,9 @@ function UploadForm() {
         Number of Options:
         <select
           name="totalOptionNumber"
-          value={numOptions}
-          onChange={handleNumOptionsChange}>
-          {[2, 3, 4, 5].map((option) => (
+          value={option}
+          onChange={handleoptionChange}>
+          {["Select Option", 2, 3, 4, 5].map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
@@ -491,7 +494,7 @@ function UploadForm() {
         />
       </label>
       
-      <label style={{ display: numOptions > 2 ? 'block' : 'none' }}>
+      <label style={{ display: option > 2 ? 'block' : 'none' }}>
         Option 3:
         <input
           type="text"
@@ -501,7 +504,7 @@ function UploadForm() {
         />
       </label>
      
-      <label style={{ display: numOptions > 3 ? 'block' : 'none' }}>
+      <label style={{ display: option > 3 ? 'block' : 'none' }}>
         Option 4:
         <input
           type="text"
@@ -511,7 +514,7 @@ function UploadForm() {
         />
       </label>
       
-      <label style={{ display: numOptions > 4 ? 'block' : 'none' }}>
+      <label style={{ display: option > 4 ? 'block' : 'none' }}>
         Option 5:
         <input
           type="text"
@@ -531,7 +534,6 @@ function UploadForm() {
       </label>
 
 <div style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
-      {/* <Demo /> */}
 
       <label htmlFor="option">Select Number of Buttons:</label>
         <select id="option" value={option} onChange={handleChange}>
@@ -541,12 +543,9 @@ function UploadForm() {
         </select>
         {renderFormFields()}
 
-
-
-
 </div>
       
-      <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+      {/* <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Option Type:
         <select
           name="option"
@@ -627,7 +626,7 @@ function UploadForm() {
           onChange={handleoption}
           readOnly
         />
-      </label>
+      </label> */}
       
       <button type="submit" onClick={() =>{
         buttonClick = true
