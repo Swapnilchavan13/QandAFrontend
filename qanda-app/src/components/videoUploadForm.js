@@ -52,11 +52,39 @@ function UploadForm() {
     optionFive:'',
     adStartTime:'',
     correctOption:'',
-    // brandName:'',
+    brandName:'',
+    isSample: '',
     // brandLogo:'',
     // contactPersonName:'',
     // contactPersonNumber:''
   });
+
+  const handleIsSampleChange = (e) => {
+    const isSampleValue = e.target.value;
+    setFormData(prevState => ({
+      ...prevState,
+      isSample: isSampleValue,
+    }));
+  };
+
+  const [isQuestionExisting, setQuestionExisting] = useState(false);
+   const handleQuestionChange = () => {
+    setQuestionExisting(!isQuestionExisting);
+  };
+
+  const [questionDetails, setQuestionDetails] = useState([]);
+
+
+    useEffect(() => {
+      fetch(`${apiUrl}/getQuestionDetails`)
+        .then(response => response.json())
+        .then(results => {
+          setQuestionDetails(results.questionData);
+        })
+        .catch(error => {
+          console.error('Error fetching videos:', error);
+        });
+      },[]);
 
   const [brandDetails,setBrandDetails] = useState([]);
   useEffect(() => {
@@ -70,25 +98,25 @@ function UploadForm() {
       });
     },[]);
 
-    const [numOptions, setNumOptions] = useState(2);
+  const [numOptions, setNumOptions] = useState(2);
   const [option, setOption] = useState(numOptions);
-  const [totalOptionNumber, setTotalOptionNumber] = useState(2);
 
 
   const handleNumOptionsChange = (e) => {
     const selectedNumOptions = parseInt(e.target.value, 10);
     setNumOptions(selectedNumOptions);
     setOption(selectedNumOptions);
-
-    setFormData({
-      ...formData,
+  
+    setFormData(prevState => ({
+      ...prevState,
+      option: selectedNumOptions,
       optionOne: '',
       optionTwo: '',
       optionThree: '',
       optionFour: '',
       optionFive: '',
       correctOption: '',
-    });
+    }));
   };
 
   const [showAlert, setShowAlert] = useState(false);
@@ -97,49 +125,6 @@ function UploadForm() {
   const [videoType,setVideoType] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  const optionMapping = {
-    2: [
-      {"padx1":194,"padx2":206}, 
-      {"pady1":65,"pady2":68,}, 
-      {text: "Helvetica 38"}, 
-      {"x1":0,"x2":0},
-      {"y1":300,"y2":502},
-      {color:"red"}
-    ],
-
-  3: [
-    {"padx1":177,"padx2":192}, 
-    {"pady1":60,"pady2":54}, 
-    {"x1":0,"x2":0},
-    {text: "Helvetica 38"}, 
-    {"y1":424,"y2":617},
-    {color:"red"}
-  ],    
-
-    4: [
-      {"padx1":130,"padx2":74, "padx3":39, "padx4":116},
-      {"pady1":23, "pady2":23, "pady3":23, "pady4":23},
-      {text:"Helvetica 38"},
-      {"x1":0,"x2":0,"x3":0,"x4":0},
-      {"y1":257,"y2":369,"y3":481,"y4":593},
-      {color:"red"}
-   ],
-   5.1: [
-     {"padx1":99,"padx2":81, "padx3":108, "padx4":157, "padx5":97},
-     {"pady1":15, "pady2":17, "pady3":20, "pady4":17, "pady5":17},
-     {text:"Helvetica 38"},
-     {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
-     {"y1":197,"y2":295,"y3":396,"y4":506, "y5":606},
-     {color:"red"}
-   ],
-   5.2: [
-     {"padx1":156,"padx2":198,"padx3":195,"padx4":11,"padx5":136},
-     {"pady1":15,"pady2":17,"pady3":22,"pady4":20,"pady5":17},
-     {"text":"Helvetica 34"},
-     {"x1":0,"x2":0,"x3":0,"x4":0,"x5":0},
-     {"y1":197,"y2":295,"y3":396,"y4":506,"y5":606},
-     {"color":"red"}
-   ]};
 
    const [isBrandExisting, setBrandExisting] = useState(false);
    const handleCheckboxChange = () => {
@@ -151,20 +136,6 @@ function UploadForm() {
     setFormData({
       ...formData,
       questionTypeID: selectedQuestionTypeID,
-    });
-  };
-
-  const handleoption = (e) => {
-    const optionid = e.target.value;
-    setFormData({
-      ...formData,
-      option: optionid,
-      padX: JSON.stringify(optionMapping[optionid][0]) || "",
-      padY: JSON.stringify(optionMapping[optionid][1])|| "",
-      text: JSON.stringify(optionMapping[optionid][2]) || "",
-      x: JSON.stringify(optionMapping[optionid][3])|| "",
-      y: JSON.stringify(optionMapping[optionid][4]) || "",
-      colours: JSON.stringify(optionMapping[optionid][5]) || "",
     });
   };
 
@@ -233,7 +204,7 @@ function UploadForm() {
     console.log("final form data:",formData);
 
     try {
-      const response = await fetch(`${apiUrl}/api/uploadVideo`, {
+      const response = await fetch(`http://192.168.0.117:8012/addContentData`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -397,6 +368,46 @@ function UploadForm() {
           </select>
       </label>
 
+      <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+
+        <h4>Choose Option:</h4><label className={`checkbox-label ${isQuestionExisting ? 'isQuestionExisting' : ''}`}>
+    <input
+      type="checkbox"
+      checked={isQuestionExisting}
+      onChange={handleQuestionChange}
+      className="checkbox-input"
+
+    />
+    Add New Question
+  </label> 
+  <label className={`checkbox-label ${!isQuestionExisting ? 'isQuestionExisting' : ''}` }>
+    <input
+      type="checkbox"
+      checked={!isQuestionExisting}
+      onChange={handleQuestionChange}
+      className="checkbox-input"
+      disabled={questionDetails.length<=0 ? 'disabled' : ''}
+    />
+    Choose From Existing Question
+  </label>
+</div>  
+           
+   
+      <label disable={true} style={{ display: formData.videoType === "Advertisement" && !isQuestionExisting ? 'block' : 'none' }}>
+          Question:
+          <select name="questionDescription" value={formData.questionDescription} onChange={handleChange}>
+            <option value="" disabled>Select Question</option>
+            {questionDetails.map(question => (
+              <option key={question.id} value={question.questionDescription}>{question.questionDescription}</option>
+            ))}
+          </select>
+        </label>
+
+        <label style={{ display: formData.videoType === "Advertisement" && !isQuestionExisting ? 'block' : 'none'}}>
+        Enter New Question Here:
+          <input type="text" name="questionDescription" value={formData.durquestionDescriptionation} onChange={handleChange} />
+      </label>
+
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Question Type ID:
         <select
@@ -429,28 +440,25 @@ function UploadForm() {
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
     
-      {/* <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
-  Option Type:
+
+<label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+  Is this a sample?
   <select
-    name="option"
-    value={formData.option}
-    onChange={handleoption}
-  >
-    <option value="">Select Available Options</option>
-    {[2, 3, 4, 5].map((option) => (
-      <option key={option} value={option}>
-        {option}
-      </option>
-    ))}
+    name="isSample"
+    value={formData.isSample}
+    onChange={handleIsSampleChange}>
+    <option value="">Select</option>
+    <option value="true">Yes</option>
+    <option value="false">No</option>
   </select>
-</label> */}
+</label>
 
 
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Number of Options:
         <select
           name="totalOptionNumber"
-          value={numOptions}
+          value={option}
           onChange={handleNumOptionsChange}>
           {[2, 3, 4, 5].map((option) => (
             <option key={option} value={option}>
