@@ -15,6 +15,9 @@ const Scheduler = () => {
   const [theaters, setTheaters] = useState([]);
   const [selectedTheater, setSelectedTheater] = useState('');
 
+  const [selectetmovie, setselectetMovie] = useState('');
+
+
   const[movievideo, setMovieVideo] = useState([])
 
   const [screens, setScreens] = useState([]);
@@ -79,10 +82,15 @@ const Scheduler = () => {
   }, [schedulerCount, selectedTheater ]); // Include schedulerCount in the dependency array
 
  // Inside handleVideoChange function
+ console.log(videos)
+
+// Inside handleVideoChange function
 const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   const updatedSchedules = [...selectedSchedules];
+  console.log(video);
   if (video) {
     if (typeof video === 'object') { // If it's a movie object
+      console.log(video.movieID); // Log the movieID
       updatedSchedules[schedulerIndex][slotIndex] = {
         movieID: video.movieID,
         movieName: video.movieName,
@@ -90,13 +98,26 @@ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
         movieURLPartTwo: video.movieURLPartTwo
       };
     } else { // If it's an ad video link
-      updatedSchedules[schedulerIndex][slotIndex] = video;
+      // Try to find the movie with the given movieURLPartOne
+      const movie = videos.find(movie => movie.movieURLPartOne === video);
+      if (movie) {
+        setselectetMovie(movie.movieID); // Set the movieID if found
+        updatedSchedules[schedulerIndex][slotIndex] = video;
+      } else {
+        console.log("Movie not found with the provided URL.");
+        // Pass the video URL as is
+        updatedSchedules[schedulerIndex][slotIndex] = video;
+      }
     }
   } else {
     updatedSchedules[schedulerIndex][slotIndex] = '';
   }
   setSelectedSchedules(updatedSchedules);
 };
+
+
+
+
 
   const getTotalDuration = (schedulerIndex) => {
     return selectedSchedules[schedulerIndex].reduce((totalDuration, videoID) => {
@@ -132,8 +153,9 @@ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
       selectedIds = selectedSchedules[schedulerIndex].filter((_, index) => index !== slotIndex);
     }
       return videos.filter(video => !selectedIds.includes(video));
-    
   };
+
+ console.log(selectetmovie)
 
 // Inside handleSaveClick function
 const handleSaveClick = async (schedulerIndex) => {
@@ -143,18 +165,18 @@ const handleSaveClick = async (schedulerIndex) => {
     slot_index: schedulerIndex + 1,
     screen_id: selectedScreen,
     advertisementIDList: "1,2,3",
-    movie_id: 1000,    
+    movie_id: selectetmovie,  // Assign the movieID to movie_id
+    
     video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => {
       if (typeof videoLink === 'object') {
         // If it's a movie object, construct the movie data
         return {
-          movie_id: 1000,
           movieURLPartOne: videoLink.movieURLPartOne,
           movieURLPartTwo: videoLink.movieURLPartTwo
         };
       } else {
         // If it's an ad video link, construct the ad data
-        return { adVideoLink: videoLink };
+        return { Videolink: videoLink };
       }
     }),
   };
@@ -178,7 +200,6 @@ const handleSaveClick = async (schedulerIndex) => {
   }
 };
 
-
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
   return Array(15).fill().map((_, slotIndex) => (
@@ -189,15 +210,34 @@ const renderDropdowns = (startDate, schedulerIndex) => {
         onChange={(e) => handleVideoChange(schedulerIndex, slotIndex, e.target.value)}
       >
         <option value="" disabled>Select a video</option>
-        {getAvailableOptions(schedulerIndex, slotIndex).map(video => (
-          <option key={video.id || video.movieID} value={video.adVideoLink || video.movieName}>
-            {video.adVideoLink ? video.adVideoLink : video.movieName}
-          </option>
-        ))}
+        {getAvailableOptions(schedulerIndex, slotIndex).map(video => {
+          const value = video.adVideoLink || video.movieURLPartOne;
+          const optionOneText = video.adVideoLink ? `AD - ${video.adVideoLink}` : video.movieURLPartOne;
+          let optionTwoText = "No Part Two";
+          if (video.movieURLPartTwo) {
+            const movieNamePartTwo = video.movieName || ""; // Movie name part two if available
+            optionTwoText = `${movieNamePartTwo} - Part 2`;
+          }
+
+          return (
+            <React.Fragment key={video.id || video.movieID}>
+              <option value={value}>
+                {video.adVideoLink ? optionOneText : `${video.movieName || ""} - Part 1`}
+              </option>
+              {video.movieURLPartTwo && (
+                <option value={video.movieURLPartTwo}>
+                  {optionTwoText}
+                </option>
+              )}
+            </React.Fragment>
+          );
+        })}
       </select>
     </div>
   ));
 };
+
+
 
 
   // console.log(selectedSchedules)
