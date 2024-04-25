@@ -23,6 +23,10 @@ export const Navbar = () => {
       <Link to="userResponse">
         <h3>User Response</h3>
       </Link>
+
+      <Link to="localplaylist">
+        <h3>Local Playlist</h3>
+      </Link>
     </div>
   );
 };

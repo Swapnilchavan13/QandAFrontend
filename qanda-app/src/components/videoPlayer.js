@@ -84,7 +84,7 @@ export const VideoPlayer = () => {
 
 
   // Fetch video data from API and compare with the current video URL
-  fetch(`${apiUrl}/api/allVideos`)
+  fetch(`${apiUrl}/getSchedulerData`)
   .then(response => response.json())
   .then(data => {
     console.log(data)
@@ -175,9 +175,9 @@ export const VideoPlayer = () => {
             controls
             onEnded={handleVideoEnded}
             onTimeUpdate={handleTimeUpdate}
-            ref={videoRef}
+            // ref={videoRef}
           >
-            <source src={`http://192.168.0.114:3000/${videoLinks[currentIndex]}`} type="video/mp4" />
+            <source src={`http://192.168.0.118:3001/${videoLinks[currentIndex]}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h1>{videoID} {adStartSeconds}</h1>

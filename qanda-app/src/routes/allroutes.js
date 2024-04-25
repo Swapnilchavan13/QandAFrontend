@@ -7,6 +7,7 @@ import UploadForm from '../components/videoUploadForm.js';
 import { UserResponse } from '../components/userResponse.js';
 import { MovieTable } from '../components/movieTable.js';
 import { AdvertiseTable } from '../components/advertiseTable.js';
+import { LocalPlaylist } from '../components/localPlaylist.js';
 // import RegistrationForm from './components/registartionForm.js';
 
 export const Allroutes = () => {
@@ -21,6 +22,7 @@ export const Allroutes = () => {
           <Route path="theateroperator" element={<Theateroperator />} />
           <Route path="video-player" element={<VideoPlayer />} />
           <Route path="userResponse" element={<UserResponse />} />
+          <Route path="localplaylist" element={<LocalPlaylist/>} />
            {/* <Route path="register" element={<RegistrationForm />} />  */}
       </Routes>
 
