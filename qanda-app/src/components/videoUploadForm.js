@@ -101,7 +101,6 @@ function UploadForm() {
   const [numOptions, setNumOptions] = useState(2);
   const [option, setOption] = useState(numOptions);
 
-
   const handleNumOptionsChange = (e) => {
     const selectedNumOptions = parseInt(e.target.value, 10);
     setNumOptions(selectedNumOptions);
@@ -320,22 +319,22 @@ function UploadForm() {
     <form className="video-form" onSubmit={handleSubmit}>
       <h1>Add Video Data</h1>
       <label>
-      <span>Video URL:</span>
-      <div className="custom-file-input">
-        <input type="file" onChange={handleVideoChange} />
-        Choose a File
-      </div>
-      <span className="file-name">{formData.adVideoLink}</span>
-    </label>
-     
-      <label>
-        <span>Image URL:</span>
-      <div className="custom-file-input">
-        <input type="file" onChange={handleImageChange} />
-        Choose a File
-      </div>
-      <span className="file-name">{formData.imageURL}</span>
-      </label>
+  <span>Video URL:</span>
+  <div className="custom-file-input">
+    <input type="file" accept="video/mp4" onChange={handleVideoChange} />
+    Choose a MP4 File
+  </div>
+  <span className="file-name">{formData.adVideoLink}</span>
+</label>
+
+<label>
+  <span>Image URL:</span>
+  <div className="custom-file-input">
+    <input type="file" accept="image/*" onChange={handleImageChange} />
+    Choose an Image File
+  </div>
+  <span className="file-name">{formData.imageURL}</span>
+</label>
     
       <label>
         Date:

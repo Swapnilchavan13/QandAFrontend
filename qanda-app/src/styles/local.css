@@ -1,0 +1,49 @@
+.playlist {
+    margin-bottom: 20px;
+  }
+  
+  .playlist ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .playlist li {
+    margin-bottom: 10px;
+  }
+  
+  .playlist button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .playlist button:hover {
+    background-color: #0056b3;
+  }
+  
+  video {
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .controls button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .controls button:hover {
+    background-color: #0056b3;
+  }
+  
