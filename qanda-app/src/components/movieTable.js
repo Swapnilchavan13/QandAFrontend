@@ -2,8 +2,36 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const MovieTable = () => {
-  const [movieData, setMovieData] = useState([]);
+  const [movieData, setMovieData] = useState([    {
+    "movieID": 1000,
+    "movieName": "abc movie",
+    "movieDesc": "desc",
+    "movieURLPartOne": "BigBuckBunny.mp4",
+    "movieURLPartOneSize": 150,
+    "movieURLPartTwo": "ElephantsDream.mp4",
+    "movieURLPartTwoSize": 161,
+    "movieRuntime": 12,
+    "intervalTime": 12,
+    "productionHouse": "abc house",
+    "dateTime": "2024-04-22T13:38:25.000Z",
+    "startDate": "2024-04-27T00:00:00.000Z",
+    "endDate": "2024-04-27T00:00:00.000Z",
+    "posterImage": {
+        "type": "Buffer",
+        "data": []
+    },
+    "displayToggle": 0,
+    "userResponseToggle": 1,
+    "isDeleted": 0,
+    "isExpired": 0,
+    "createdAt": "2024-04-22T13:38:25.000Z",
+    "updatedAt": "2024-04-22T13:38:25.000Z"
+}]);
   const [editedMovie, setEditedMovie] = useState(null);
+
+  const formatDate = date => {
+    return new Date(date).toISOString().split('T')[0];
+  };
 
   // Function to fetch movie data from the backend API
   const fetchMovieData = async () => {
@@ -70,9 +98,13 @@ export const MovieTable = () => {
           <td><input type="text" value={editedMovie.movieDesc} onChange={e => handleInputChange(e, 'movieDesc')} /></td>
           <td><input type="number" value={editedMovie.movieRuntime} onChange={e => handleInputChange(e, 'movieRuntime')} /></td>
           <td><input type="text" value={editedMovie.productionHouse} onChange={e => handleInputChange(e, 'productionHouse')} /></td>
-          <td><input type="date" value={editedMovie.startDate} onChange={e => handleInputChange(e, 'startDate')} /></td>
-          <td><input type="date" value={editedMovie.endDate} onChange={e => handleInputChange(e, 'endDate')} /></td>
           <td>
+          <input type="date" value={formatDate(editedMovie.startDate) || formatDate(movie.startDate)} onChange={e => handleInputChange(e, 'startDate')} />
+        </td>
+        <td>
+          <input type="date" value={formatDate(editedMovie.endDate) || formatDate(movie.endDate)} onChange={e => handleInputChange(e, 'endDate')} />
+        </td>       
+        <td>
             <select value={editedMovie.isDeleted} onChange={e => handleInputChange(e, 'isDeleted')}>
               <option value={0}>No</option>
               <option value={1}>Yes</option>

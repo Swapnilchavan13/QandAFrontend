@@ -2,7 +2,71 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const AdvertiseTable = () => {
-  const [advertisementData, setAdvertisementData] = useState([]);
+  const [advertisementData, setAdvertisementData] = useState([  {
+    "id": 1,
+    "adVideoLink": "videos/ElephantsDream.mp4",
+    "adFileSize": null,
+    "totalOptionNumber": 4,
+    "questionTableID": 1,
+    "userResponseToggle": 1,
+    "displayToggle": 0,
+    "brandID": 1,
+    "duration": 88,
+    "adStartTime": 33,
+    "isSample": 1,
+    "isDeleted": 0,
+    "createdAt": "2024-04-20T10:17:59.000Z",
+    "updatedAt": "2024-04-20T10:17:59.000Z"
+},
+{
+    "id": 2,
+    "adVideoLink": "videos/ElephantsDream.mp4",
+    "adFileSize": null,
+    "totalOptionNumber": 4,
+    "questionTableID": 1,
+    "userResponseToggle": 1,
+    "displayToggle": 0,
+    "brandID": 1,
+    "duration": 88,
+    "adStartTime": 33,
+    "isSample": 1,
+    "isDeleted": 0,
+    "createdAt": "2024-04-20T10:23:47.000Z",
+    "updatedAt": "2024-04-20T10:23:47.000Z"
+},
+{
+    "id": 7,
+    "adVideoLink": "videos/BigBuckBunny.mp4",
+    "adFileSize": null,
+    "totalOptionNumber": 4,
+    "questionTableID": 1,
+    "userResponseToggle": 1,
+    "displayToggle": 0,
+    "brandID": 1,
+    "duration": 88,
+    "adStartTime": 33,
+    "isSample": 1,
+    "isDeleted": 0,
+    "createdAt": "2024-04-20T11:36:21.000Z",
+    "updatedAt": "2024-04-20T11:36:21.000Z"
+},
+{
+    "id": 8,
+    "adVideoLink": "videos/ForBiggerBlazes.mp4",
+    "adFileSize": null,
+    "totalOptionNumber": 2,
+    "questionTableID": 1,
+    "userResponseToggle": 1,
+    "displayToggle": 0,
+    "brandID": 1,
+    "duration": 88,
+    "adStartTime": 0,
+    "isSample": 1,
+    "isDeleted": 0,
+    "createdAt": "2024-04-20T11:43:50.000Z",
+    "updatedAt": "2024-04-20T11:43:50.000Z"
+}
+]);
   const [editedData, setEditedData] = useState({});
 
   const [questionDetails, setQuestionDetails] = useState([]);
