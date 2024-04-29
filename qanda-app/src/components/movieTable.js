@@ -106,14 +106,14 @@ export const MovieTable = () => {
         </td>       
         <td>
             <select value={editedMovie.isDeleted} onChange={e => handleInputChange(e, 'isDeleted')}>
-              <option value={0}>No</option>
-              <option value={1}>Yes</option>
+              <option value={false}>No</option>
+              <option value={true}>Yes</option>
             </select>
           </td>
           <td>
             <select value={editedMovie.isExpired} onChange={e => handleInputChange(e, 'isExpired')}>
-              <option value={0}>No</option>
-              <option value={1}>Yes</option>
+              <option value={false}>No</option>
+              <option value={true}>Yes</option>
             </select>
           </td>
           <td>
