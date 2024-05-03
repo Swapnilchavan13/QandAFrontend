@@ -13,25 +13,31 @@ const Scheduler = () => {
   const slotLimit = 60; // Slot limit in minutes
   const [urlAndVideoID, setUrlAndVideoID] = useState(Array(30).fill(Array(15).fill({})).map(innerArray => [...innerArray]));
   const [theaters, setTheaters] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(Array(schedulerCount).fill(''));
+
   const [selectedTheater, setSelectedTheater] = useState('');
 
   const [selectetmovie, setselectetMovie] = useState('');
-
 
   const[movievideo, setMovieVideo] = useState([])
 
   const [screens, setScreens] = useState([]);
   const [selectedScreen, setSelectedScreen] = useState(''); // Define selectedScreen state
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [theatreandscreen, setThatreandScreen] = useState([]);
+
+  const [selectedMovieName, setSelectedMovieName] = useState('');
+  const [showTimes, setShowTimes] = useState([]);
+  const [selectedShowtime, setSelectedShowtime] = useState('');
+
 
   useEffect(() => {
     if (selectedTheater) {
       // Fetch screen details for the selected theater
-      fetch('http://192.168.0.118:8012/getScreenDetails')
+      fetch(`http://192.168.0.120:8012/getScreenDetails/${selectedTheater}`)
         .then(response => response.json())
         .then(data => {
-          console.log(data);
+          console.log("screen" + data);
           setScreens(data.screenTable);
         })
         .catch(error => {
@@ -43,7 +49,7 @@ const Scheduler = () => {
 
   useEffect(() => {
     // Fetch theater details
-    fetch('http://192.168.0.118:8012/getTheatreDetails')
+    fetch('http://192.168.0.120:8012/getTheatreDetails')
       .then(response => response.json())
       .then(data => {
         setTheaters(data.theatreTable);
@@ -54,6 +60,27 @@ const Scheduler = () => {
       });
   }, []);
 
+
+  useEffect(() => {
+    if (selectedTheater && selectedScreen) { // Ensure selectedDate is not empty
+      const url = `http://62.72.59.146:3005/allocatedatafill?theatreId=${selectedTheater}&selectedscreen=${selectedScreen}&date=${selectedDate[0]}`;
+  
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Data for selected theater, screen, and date:", data);
+          setThatreandScreen(data);
+          // You can process the data further if needed
+        })
+        .catch(error => {
+          console.error('Error fetching allocated data:', error);
+        });
+    }
+  }, [selectedTheater, selectedScreen]); // Include selectedDate in the dependency array
+  
+
+
+  console.log(theatreandscreen)
 
   useEffect(() => {
     if(selectedTheater){
@@ -83,6 +110,12 @@ const Scheduler = () => {
 
  // Inside handleVideoChange function
  console.log(videos)
+
+ const handleDateChange = (schedulerIndex, date) => {
+  const updatedSelectedDates = [...selectedDate];
+  updatedSelectedDates[schedulerIndex] = date || ''; // Set an empty string if no date is selected
+  setSelectedDate(updatedSelectedDates);
+};
 
 // Inside handleVideoChange function
 const handleVideoChange = (schedulerIndex, slotIndex, video) => {
@@ -114,10 +147,6 @@ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   }
   setSelectedSchedules(updatedSchedules);
 };
-
-
-
-
 
   const getTotalDuration = (schedulerIndex) => {
     return selectedSchedules[schedulerIndex].reduce((totalDuration, videoID) => {
@@ -202,9 +231,20 @@ const handleSaveClick = async (schedulerIndex) => {
 
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
+  const datesFromData = new Set(); // Create a Set to store unique dates
+
+  theatreandscreen.forEach(item => {
+    datesFromData.add(item.date);
+  });
+
+  // Display showtimes for the selected date
+  const movieDataForDate = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData;
+  const showTimes = movieDataForDate ? Object.values(movieDataForDate[selectedMovieName] || {}) : [];
+
   return Array(15).fill().map((_, slotIndex) => (
     <div key={slotIndex} className="dropdown-container">
       <label>{`Scheduler ${schedulerIndex + 1} - Slot ${slotIndex + 1}`}</label>
+
       <select
         value={selectedSchedules[schedulerIndex][slotIndex]?.movieName || selectedSchedules[schedulerIndex][slotIndex]}
         onChange={(e) => handleVideoChange(schedulerIndex, slotIndex, e.target.value)}
@@ -237,9 +277,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
   ));
 };
 
-
-
-
   // console.log(selectedSchedules)
 
   const renderSchedulers = () => {
@@ -248,23 +285,64 @@ const renderDropdowns = (startDate, schedulerIndex) => {
         <h1>No data added in the slot page.</h1>
       );
     } else {
-        return startDates.map((startDate, index) => (
-        <div key={index} className="scheduler-container">
-          <h2>{`Slot ${index + 1} - ${startDate.toDateString()}`}</h2>
-          <div className="date-picker">
-            <label>Date:</label>
-            <input type="date" value={startDate.toISOString().split('T')[0]} readOnly />
+      return theatreandscreen.map((theatreAndScreenData, index) => {
+        const startDate = new Date(theatreAndScreenData.date);
+        return (
+          <div key={index} className="scheduler-container">
+            <h2>{`Slot ${index + 1} - ${startDate.toDateString()}`}</h2>
+            <p>Selected Movie: {selectedMovieName}</p>
+            <p>Showtime: {selectedShowtime}</p>
+            <p>Show Date: {selectedDate}</p>
+
+            {renderDropdowns(startDate, 0)}
+            {/* Display selected movie and showtime */}
+            <button onClick={() => handleSaveClick(index)}>Save</button>
+            <p className="slot-limit-info">{`Slot limit: ${slotLimit} minutes`}</p>
+            {errors[index] && <p className="error-message">{errors[index]}</p>}
           </div>
-          {renderDropdowns(startDate, index)}
-          <button onClick={() => handleSaveClick(index)}>Save</button>
-          <p className="slot-limit-info">{`Slot limit: ${slotLimit} minutes`}</p>
-          {errors[index] && <p className="error-message">{errors[index]}</p>}
-        </div>
-      ));
+        );
+      });
     }
   };
+  
 
-  const renderDropdown = () => {
+
+  const renderDropdown = (schedulerIndex) => {
+
+    const datesFromData = new Set();
+    theatreandscreen.forEach(item => {
+      datesFromData.add(item.date);
+    });
+
+    const handleMovieNameChange = (event) => {
+      const selectedMovie = event.target.value;
+      setSelectedMovieName(selectedMovie);
+    
+      // Find the movie data for the selected date
+      const movieDataForDate = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData;
+    
+      if (movieDataForDate) {
+        // Set the selected showtime to the first showtime available for the selected movie
+        setSelectedShowtime(movieDataForDate[selectedMovie][0]);
+        // Set the showtimes for the selected movie
+        setShowTimes(movieDataForDate[selectedMovie].map((part, index) => part));
+      } else {
+        setSelectedShowtime('');
+        setShowTimes([]);
+      }
+    };
+    
+    const handleShowChange = (event) => {
+      setSelectedShowtime(event.target.value);
+    };
+
+    const handleDateChange = (schedulerIndex, date) => {
+      const updatedSelectedDates = [...selectedDate];
+      updatedSelectedDates[schedulerIndex] = date || ''; // Set an empty string if no date is selected
+      setSelectedDate(updatedSelectedDates);
+    };
+    
+
     return (
       <div>
         <h3>Select The Theatre</h3>
@@ -280,27 +358,71 @@ const renderDropdowns = (startDate, schedulerIndex) => {
             </option>
           ))}
         </select>
-        <br/>
-       
+        <br />
         <h3>Select The Screen</h3>
         <select
-         className='selecttag'
+          className='selecttag'
           value={selectedScreen}
           onChange={(e) => setSelectedScreen(e.target.value)}
         >
           <option value="" disabled>Select a screen</option>
           {screens.map(screen => (
-            <option key={screen.id} value={screen.id}>
+            <option key={screen.id} value={screen.screenNo}>
               {`Screen ${screen.screenNo}`}
             </option>
           ))}
         </select>
-
-
-        <br/>
-        <label>Number of Slots:</label>
+        <h3>Select a Date</h3>
         <select
-        className='selecttag'
+  className='selecttag'
+  value={selectedDate[schedulerIndex] || ''} // Initialize with an empty string
+  onChange={(e) => handleDateChange(schedulerIndex, e.target.value)}
+>
+  <option value="">Select a date</option>
+  {Array.from(datesFromData).map(date => (
+    <option key={date} value={date}>
+      {date}
+    </option>
+  ))}
+</select>
+
+
+        {selectedDate[schedulerIndex] && (
+          <>
+            <label>Select Movie:</label>
+            <select 
+             className='selecttag'
+            value={selectedMovieName} onChange={handleMovieNameChange}>
+              <option value="">Select a movie</option>
+              {Object.keys(theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData || {}).map(movieName => (
+                <option key={movieName} value={movieName}>
+                  {movieName}
+                </option>
+              ))}
+            </select>
+           {selectedMovieName && (
+  <div>
+    <label>Select Show Time:</label>
+    <select  
+      className='selecttag'
+      value={selectedShowtime} 
+      onChange={handleShowChange}
+    >
+      <option value="">Select a show time</option>
+      {showTimes.map(showTime => (
+        <option key={showTime} value={showTime}>
+          {showTime}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+          </>
+        )}
+        {/* <label>Number of Slots:</label>
+        <select
+          className='selecttag'
           value={schedulerCount}
           onChange={(e) => setSchedulerCount(parseInt(e.target.value, 10))}
         >
@@ -309,7 +431,7 @@ const renderDropdowns = (startDate, schedulerIndex) => {
               {count}
             </option>
           ))}
-        </select>
+        </select> */}
       </div>
     );
   };

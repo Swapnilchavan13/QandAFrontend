@@ -178,6 +178,10 @@ export const AdvertiseTable = () => {
           <label>Total Option Number: </label>
           <input type="number" name="totalOptionNumber" value={editedData.totalOptionNumber || ''} onChange={handleInputChange} />
           <br />
+          <br />
+          <label>Total Option Number: </label>
+          <input type="number" name="totalOptionNumber" value={editedData.totalOptionNumber || ''} onChange={handleInputChange} />
+          <br />
           <label>Is Deleted: </label>
           <select name="isDeleted" value={editedData.isDeleted || ''} onChange={handleInputChange}>
             <option value={true}>Yes</option>
@@ -189,6 +193,10 @@ export const AdvertiseTable = () => {
             <option value={true}>Yes</option>
             <option value={false}>No</option>
           </select>
+
+          <br />
+          <label>Question Table ID: </label>
+          <input type="number" name="questionTableID" value={editedData.questionTableID || ''} onChange={handleInputChange} />
 
           <label>
           Question:
