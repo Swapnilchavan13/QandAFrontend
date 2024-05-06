@@ -2,78 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const AdvertiseTable = () => {
-  const [advertisementData, setAdvertisementData] = useState([  {
-    "id": 1,
-    "adVideoLink": "videos/ElephantsDream.mp4",
-    "adFileSize": null,
-    "totalOptionNumber": 4,
-    "questionTableID": 1,
-    "userResponseToggle": 1,
-    "displayToggle": 0,
-    "brandID": 1,
-    "duration": 88,
-    "adStartTime": 33,
-    "isSample": 1,
-    "isDeleted": 0,
-    "createdAt": "2024-04-20T10:17:59.000Z",
-    "updatedAt": "2024-04-20T10:17:59.000Z"
-},
-{
-    "id": 2,
-    "adVideoLink": "videos/ElephantsDream.mp4",
-    "adFileSize": null,
-    "totalOptionNumber": 4,
-    "questionTableID": 1,
-    "userResponseToggle": 1,
-    "displayToggle": 0,
-    "brandID": 1,
-    "duration": 88,
-    "adStartTime": 33,
-    "isSample": 1,
-    "isDeleted": 0,
-    "createdAt": "2024-04-20T10:23:47.000Z",
-    "updatedAt": "2024-04-20T10:23:47.000Z"
-},
-{
-    "id": 7,
-    "adVideoLink": "videos/BigBuckBunny.mp4",
-    "adFileSize": null,
-    "totalOptionNumber": 4,
-    "questionTableID": 1,
-    "userResponseToggle": 1,
-    "displayToggle": 0,
-    "brandID": 1,
-    "duration": 88,
-    "adStartTime": 33,
-    "isSample": 1,
-    "isDeleted": 0,
-    "createdAt": "2024-04-20T11:36:21.000Z",
-    "updatedAt": "2024-04-20T11:36:21.000Z"
-},
-{
-    "id": 8,
-    "adVideoLink": "videos/ForBiggerBlazes.mp4",
-    "adFileSize": null,
-    "totalOptionNumber": 2,
-    "questionTableID": 1,
-    "userResponseToggle": 1,
-    "displayToggle": 0,
-    "brandID": 1,
-    "duration": 88,
-    "adStartTime": 0,
-    "isSample": 1,
-    "isDeleted": 0,
-    "createdAt": "2024-04-20T11:43:50.000Z",
-    "updatedAt": "2024-04-20T11:43:50.000Z"
-}
-]);
+  const [advertisementData, setAdvertisementData] = useState([]);
   const [editedData, setEditedData] = useState({});
 
   const [questionDetails, setQuestionDetails] = useState([]);
 
 
     useEffect(() => {
-      fetch(`http://192.168.0.117:8012/getQuestionDetails`)
+      fetch(`http://192.168.0.132:8012/getQuestionDetails`)
         .then(response => response.json())
         .then(results => {
           setQuestionDetails(results.questionData);
@@ -86,7 +22,7 @@ export const AdvertiseTable = () => {
   // Function to fetch advertisement data from the backend API
   const fetchAdvertisementData = async () => {
     try {
-      const response = await axios.get('http://192.168.0.117:8012/getAdvertisementDetails');
+      const response = await axios.get('http://192.168.0.132:8012/getAdvertisementDetails');
       setAdvertisementData(response.data.adData);
     } catch (error) {
       console.error('Error fetching advertisement data:', error);
@@ -101,7 +37,7 @@ export const AdvertiseTable = () => {
   // Function to handle deletion of an advertisement by ID
   const deleteAdvertisement = async (id) => {
     try {
-      await axios.delete(`http://192.168.0.117:8012/deleteAdvertisementDetails/${id}`);
+      await axios.delete(`http://192.168.0.132:8012/deleteAdvertisementDetails/${id}`);
       setAdvertisementData(advertisementData.filter(ad => ad.id !== id));
     } catch (error) {
       console.error('Error deleting advertisement:', error);
@@ -120,7 +56,7 @@ export const AdvertiseTable = () => {
   const updateAdvertisement = async () => {
     const id = editedData.id;
     try {
-      await axios.put(`http://192.168.0.117:8012/updateAdvertisement/${id}`, editedData);
+      await axios.put(`http://192.168.0.132:8012/updateAdvertisement/${id}`, editedData);
       console.log('Advertisement updated successfully.');
       // Clear the edited data
       setEditedData({});

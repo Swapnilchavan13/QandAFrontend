@@ -19,7 +19,7 @@ const Scheduler = () => {
 
   const [selectetmovie, setselectetMovie] = useState('');
 
-  const[movievideo, setMovieVideo] = useState([])
+  const [movievideo, setMovieVideo] = useState([])
 
   const [screens, setScreens] = useState([]);
   const [selectedScreen, setSelectedScreen] = useState(''); // Define selectedScreen state
@@ -34,7 +34,7 @@ const Scheduler = () => {
   useEffect(() => {
     if (selectedTheater) {
       // Fetch screen details for the selected theater
-      fetch(`http://192.168.0.120:8012/getScreenDetails/${selectedTheater}`)
+      fetch(`http://192.168.0.132:8012/getScreenDetails/${selectedTheater}`)
         .then(response => response.json())
         .then(data => {
           console.log("screen" + data);
@@ -49,7 +49,7 @@ const Scheduler = () => {
 
   useEffect(() => {
     // Fetch theater details
-    fetch('http://192.168.0.120:8012/getTheatreDetails')
+    fetch('http://192.168.0.132:8012/getTheatreDetails')
       .then(response => response.json())
       .then(data => {
         setTheaters(data.theatreTable);
@@ -78,7 +78,6 @@ const Scheduler = () => {
     }
   }, [selectedTheater, selectedScreen]); // Include selectedDate in the dependency array
   
-
 
   console.log(theatreandscreen)
 
@@ -111,14 +110,9 @@ const Scheduler = () => {
  // Inside handleVideoChange function
  console.log(videos)
 
- const handleDateChange = (schedulerIndex, date) => {
-  const updatedSelectedDates = [...selectedDate];
-  updatedSelectedDates[schedulerIndex] = date || ''; // Set an empty string if no date is selected
-  setSelectedDate(updatedSelectedDates);
-};
 
-// Inside handleVideoChange function
-const handleVideoChange = (schedulerIndex, slotIndex, video) => {
+
+ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   const updatedSchedules = [...selectedSchedules];
   console.log(video);
   if (video) {
@@ -148,8 +142,10 @@ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   setSelectedSchedules(updatedSchedules);
 };
 
+console.log(selectedSchedules);
+
   const getTotalDuration = (schedulerIndex) => {
-    return selectedSchedules[schedulerIndex].reduce((totalDuration, videoID) => {
+    return selectedSchedules[0].reduce((totalDuration, videoID) => {
       const selectedVideo = videos.find(video => video.videoID === videoID);
       return totalDuration + (selectedVideo ? selectedVideo.DurationInMinutes : 0);
     }, 0);
@@ -179,24 +175,40 @@ const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   const getAvailableOptions = (schedulerIndex, slotIndex) => {
     var selectedIds = 0;
     if(selectedSchedules){
-      selectedIds = selectedSchedules[schedulerIndex].filter((_, index) => index !== slotIndex);
+      selectedIds = selectedSchedules[0].filter((_, index) => index !== slotIndex);
     }
       return videos.filter(video => !selectedIds.includes(video));
   };
 
  console.log(selectetmovie)
 
+ function convertTimeToHHMMSS(timeString) {
+  const [hoursMinutes, meridiem] = timeString.split(' '); // Split the time string into hours:minutes and meridiem (AM/PM)
+  let [hours, minutes] = hoursMinutes.split(':').map(Number); // Extract hours and minutes as numbers
+  
+  // Adjust hours for PM time
+  if (meridiem === 'PM' && hours !== 12) {
+      hours += 12;
+  }
+  
+  // Convert to HH:MM:SS format
+  const formattedTime = `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:00`;
+  
+  return formattedTime;
+}
+
 // Inside handleSaveClick function
 const handleSaveClick = async (schedulerIndex) => {
   const schedulerData = {
     theatre_id: selectedTheater,
-    start_date: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
+    premiereDate: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
     slot_index: schedulerIndex + 1,
     screen_id: selectedScreen,
     advertisementIDList: "1,2,3",
     movie_id: selectetmovie,  // Assign the movieID to movie_id
+    premiereTime: convertTimeToHHMMSS(selectedShowtime),
     
-    video_links: selectedSchedules[schedulerIndex].map((videoLink, index) => {
+    video_links: selectedSchedules[0].map((videoLink, index) => {
       if (typeof videoLink === 'object') {
         // If it's a movie object, construct the movie data
         return {
@@ -209,6 +221,8 @@ const handleSaveClick = async (schedulerIndex) => {
       }
     }),
   };
+
+  console.log(schedulerData);
 
   try {
     const response = await fetch(`${apiUrl}/saveSchedulerData`, {
@@ -229,6 +243,7 @@ const handleSaveClick = async (schedulerIndex) => {
   }
 };
 
+
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
   const datesFromData = new Set(); // Create a Set to store unique dates
@@ -237,49 +252,102 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     datesFromData.add(item.date);
   });
 
+  function convertDateFormat(dateString) {
+    // Parse the original date string
+    const originalDate = new Date(dateString);
+    
+    // Get the month, day, and year
+    const month = originalDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based month
+    const day = originalDate.getDate();
+    const year = originalDate.getFullYear();
+    
+    // Construct the new date string in "M/D/YYYY" format
+    const newDateString = `${month}/${day}/${year}`;
+    
+    return newDateString;
+}
+
+  // Filter theatreandscreen data based on the selected date
+  const selectedDateData = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex]);
+  const movieDataForDate = selectedDateData ? selectedDateData.movieData : null;
+
   // Display showtimes for the selected date
-  const movieDataForDate = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData;
   const showTimes = movieDataForDate ? Object.values(movieDataForDate[selectedMovieName] || {}) : [];
 
-  return Array(15).fill().map((_, slotIndex) => (
-    <div key={slotIndex} className="dropdown-container">
-      <label>{`Scheduler ${schedulerIndex + 1} - Slot ${slotIndex + 1}`}</label>
+  return Array(15).fill().map((_, slotIndex) => {
 
-      <select
-        value={selectedSchedules[schedulerIndex][slotIndex]?.movieName || selectedSchedules[schedulerIndex][slotIndex]}
-        onChange={(e) => handleVideoChange(schedulerIndex, slotIndex, e.target.value)}
-      >
-        <option value="" disabled>Select a video</option>
-        {getAvailableOptions(schedulerIndex, slotIndex).map(video => {
-          const value = video.adVideoLink || video.movieURLPartOne;
-          const optionOneText = video.adVideoLink ? `AD - ${video.adVideoLink}` : video.movieURLPartOne;
-          let optionTwoText = "No Part Two";
-          if (video.movieURLPartTwo) {
-            const movieNamePartTwo = video.movieName || ""; // Movie name part two if available
-            optionTwoText = `${movieNamePartTwo} - Part 2`;
-          }
+    // Check if the slot belongs to the selected date
+    const slotDate = new Date(startDate);
 
-          return (
-            <React.Fragment key={video.id || video.movieID}>
-              <option value={value}>
-                {video.adVideoLink ? optionOneText : `${video.movieName || ""} - Part 1`}
-              </option>
-              {video.movieURLPartTwo && (
-                <option value={video.movieURLPartTwo}>
-                  {optionTwoText}
-                </option>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </select>
-    </div>
-  ));
+    slotDate.setDate(slotDate.getDate() + schedulerIndex);
+
+    const convertedDateString = convertDateFormat(slotDate.toDateString());
+
+console.log(selectedShowtime); 
+
+
+
+    if (selectedDate.undefined === convertedDateString) {
+      return (
+        <div key={slotIndex} className="dropdown-container">
+          <label>{`Scheduler ${schedulerIndex + 1} - Slot ${slotIndex + 1}`}</label>
+
+          <select
+            value={selectedSchedules[schedulerIndex][slotIndex]?.movieName || selectedSchedules[schedulerIndex][slotIndex]}
+            onChange={(e) => handleVideoChange(schedulerIndex, slotIndex, e.target.value)}
+          >
+            <option value="" disabled>Select a video</option>
+            {getAvailableOptions(schedulerIndex, slotIndex).map(video => {
+              const value = video.adVideoLink || video.movieURLPartOne;
+              const optionOneText = video.adVideoLink ? `AD - ${video.adVideoLink}` : video.movieURLPartOne;
+              let optionTwoText = "No Part Two";
+              if (video.movieURLPartTwo) {
+                const movieNamePartTwo = video.movieName || ""; // Movie name part two if available
+                optionTwoText = `${movieNamePartTwo} - Part 2`;
+              }
+
+              return (
+                <React.Fragment key={video.id || video.movieID}>
+                  <option value={value}>
+                    {video.adVideoLink ? optionOneText : `${video.movieName || ""} - Part 1`}
+                  </option>
+                  {video.movieURLPartTwo && (
+                    <option value={video.movieURLPartTwo}>
+                      {optionTwoText}
+                    </option>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </select>
+        </div>
+      );
+    } else {
+      return null; // Render nothing if the slot date doesn't match the selected date
+    }
+  });
 };
+
 
   // console.log(selectedSchedules)
 
   const renderSchedulers = () => {
+
+    function convertDateFormat(dateString) {
+      // Parse the original date string
+      const originalDate = new Date(dateString);
+      
+      // Get the month, day, and year
+      const month = originalDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based month
+      const day = originalDate.getDate();
+      const year = originalDate.getFullYear();
+      
+      // Construct the new date string in "M/D/YYYY" format
+      const newDateString = `${month}/${day}/${year}`;
+      
+      return newDateString;
+  }
+
     if (videos.length === 0) {
       return (
         <h1>No data added in the slot page.</h1>
@@ -287,23 +355,32 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     } else {
       return theatreandscreen.map((theatreAndScreenData, index) => {
         const startDate = new Date(theatreAndScreenData.date);
-        return (
-          <div key={index} className="scheduler-container">
-            <h2>{`Slot ${index + 1} - ${startDate.toDateString()}`}</h2>
-            <p>Selected Movie: {selectedMovieName}</p>
-            <p>Showtime: {selectedShowtime}</p>
-            <p>Show Date: {selectedDate}</p>
+        const convertedDateString = convertDateFormat(startDate.toDateString());
 
-            {renderDropdowns(startDate, 0)}
-            {/* Display selected movie and showtime */}
-            <button onClick={() => handleSaveClick(index)}>Save</button>
-            <p className="slot-limit-info">{`Slot limit: ${slotLimit} minutes`}</p>
-            {errors[index] && <p className="error-message">{errors[index]}</p>}
-          </div>
-        );
+
+  
+        if (selectedDate.undefined === convertedDateString) {
+          return (
+            <div key={index} className="scheduler-container">
+              <h2>{`Slot ${index + 1} - ${startDate.toDateString()}`}</h2>
+              <p>Selected Movie: {selectedMovieName}</p>
+              <p>Showtime: {selectedShowtime}</p>
+              <p>Show Date: {selectedDate.undefined}</p>
+  
+              {renderDropdowns(startDate, 0)}
+              {/* Display selected movie and showtime */}
+              <button onClick={() => handleSaveClick(index)}>Save</button>
+              <p className="slot-limit-info">{`Slot limit: ${slotLimit} minutes`}</p>
+              {errors[index] && <p className="error-message">{errors[index]}</p>}
+            </div>
+          );
+        } else {
+          return null; // Render nothing if the selected date doesn't match the scheduler date
+        }
       });
     }
   };
+  
   
 
 
