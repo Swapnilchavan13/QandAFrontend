@@ -49,7 +49,7 @@ const Scheduler = () => {
 
   useEffect(() => {
     // Fetch theater details
-    fetch('http://192.168.0.132:8012/getTheatreDetails')
+    fetch('http://192.168.0.134:8012/getTheatreDetails')
       .then(response => response.json())
       .then(data => {
         setTheaters(data.theatreTable);

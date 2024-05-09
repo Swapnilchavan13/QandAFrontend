@@ -8,6 +8,7 @@ import { UserResponse } from '../components/userResponse.js';
 import { MovieTable } from '../components/movieTable.js';
 import { AdvertiseTable } from '../components/advertiseTable.js';
 import { LocalPlaylist } from '../components/localPlaylist.js';
+import ClickerAssignForm from '../components/ClickerAssignForm.js';
 // import RegistrationForm from './components/registartionForm.js';
 
 export const Allroutes = () => {
@@ -23,7 +24,7 @@ export const Allroutes = () => {
           <Route path="video-player" element={<VideoPlayer />} />
           <Route path="userResponse" element={<UserResponse />} />
           <Route path="localplaylist" element={<LocalPlaylist/>} />
-           {/* <Route path="register" element={<RegistrationForm />} />  */}
+           <Route path="clickerassign" element={<ClickerAssignForm />} /> 
       </Routes>
 
 

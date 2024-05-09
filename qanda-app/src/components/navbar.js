@@ -27,6 +27,12 @@ export const Navbar = () => {
       <Link to="localplaylist">
         <h3>Local Playlist</h3>
       </Link>
+
+      <Link to="clickerassign">
+        <h3>Clicker assign</h3>
+      </Link>
+
+      
     </div>
   );
 };
