@@ -62,14 +62,18 @@ const Scheduler = () => {
 
 
   useEffect(() => {
-    if (selectedTheater && selectedScreen) { // Ensure selectedDate is not empty
+    if (selectedTheater && selectedScreen ) { // Ensure selectedDate is not empty
       const url = `http://62.72.59.146:3005/allocatedatafill?theatreId=${selectedTheater}&selectedscreen=${selectedScreen}&date=${selectedDate[0]}`;
   
       fetch(url)
         .then(response => response.json())
         .then(data => {
           console.log("Data for selected theater, screen, and date:", data);
-          setThatreandScreen(data);
+          if (data && (Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0)) {
+            setThatreandScreen(data);
+          } else {
+            setThatreandScreen("No data found");
+          }
           // You can process the data further if needed
         })
         .catch(error => {
@@ -77,7 +81,7 @@ const Scheduler = () => {
         });
     }
   }, [selectedTheater, selectedScreen]); // Include selectedDate in the dependency array
-  
+
 
   console.log(theatreandscreen)
 
@@ -108,7 +112,7 @@ const Scheduler = () => {
   }, [schedulerCount, selectedTheater ]); // Include schedulerCount in the dependency array
 
  // Inside handleVideoChange function
- console.log(videos)
+ console.log( videos)
 
 
 
@@ -248,9 +252,19 @@ const handleSaveClick = async (schedulerIndex) => {
 const renderDropdowns = (startDate, schedulerIndex) => {
   const datesFromData = new Set(); // Create a Set to store unique dates
 
+
   theatreandscreen.forEach(item => {
     datesFromData.add(item.date);
   });
+
+  function convertDate(dateString) {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1; // Adding 1 because months are zero-indexed
+    const day = date.getDate();
+    const year = date.getFullYear();
+    
+    return `${month}/${day}/${year}`;
+}
 
   function convertDateFormat(dateString) {
     // Parse the original date string
@@ -268,8 +282,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
 }
 
 
-console.log(theatreandscreen)
-
   // Filter theatreandscreen data based on the selected date
   const selectedDateData = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex]);
   const movieDataForDate = selectedDateData ? selectedDateData.movieData : null;
@@ -283,17 +295,12 @@ console.log(theatreandscreen)
     const slotDate = new Date(startDate);
 
     slotDate.setDate(slotDate.getDate() + schedulerIndex);
-
+    
     const convertedDateString = convertDateFormat(slotDate.toDateString());
+    const converted = convertDate(selectedDate.undefined);
 
 
-console.log(selectedShowtime); 
-console.log(convertedDateString); 
-
-
-
-
-    if (selectedDate.undefined === convertedDateString) {
+    if (converted === convertedDateString) {
       return (
         <div key={slotIndex} className="dropdown-container">
           <label>{`Scheduler ${schedulerIndex + 1} - Slot ${slotIndex + 1}`}</label>
@@ -336,8 +343,10 @@ console.log(convertedDateString);
 
 
   // console.log(selectedSchedules)
+ 
 
   const renderSchedulers = () => {
+
 
     function convertDate(dateString) {
       const date = new Date(dateString);
@@ -347,6 +356,7 @@ console.log(convertedDateString);
       
       return `${month}/${day}/${year}`;
   }
+   
 
     function convertDateFormat(dateString) {
       // Parse the original date string
@@ -482,8 +492,6 @@ console.log(convertedDateString);
     </option>
   ))}
 </select>
-
-
         {selectedDate[schedulerIndex] && (
           <>
             <label>Select Movie:</label>
