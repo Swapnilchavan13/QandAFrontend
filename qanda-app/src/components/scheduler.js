@@ -7,6 +7,8 @@ const apiUrl = `${config.apiBaseUrl}`;
 const Scheduler = () => {
   const [videos, setVideos] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState(Array(30).fill(Array(15).fill('')).map(innerArray => [...innerArray]));
+  const [selectedsize, setSelectedSize] = useState(Array(30).fill(Array(15).fill('')).map(innerArray => [...innerArray]));
+
   const [startDates, setStartDates] = useState([]);
   const [errors, setErrors] = useState(Array(3).fill(null));
   const [schedulerCount, setSchedulerCount] = useState(3); // State to control the number of schedulers
@@ -18,6 +20,10 @@ const Scheduler = () => {
   const [selectedTheater, setSelectedTheater] = useState('');
 
   const [selectetmovie, setselectetMovie] = useState('');
+
+  
+  
+
 
   const [movievideo, setMovieVideo] = useState([])
 
@@ -118,35 +124,79 @@ const Scheduler = () => {
 
  const handleVideoChange = (schedulerIndex, slotIndex, video) => {
   const updatedSchedules = [...selectedSchedules];
-  console.log(video);
+  const updatedSizes = [...selectedsize]; // Copy the current selectedSize state
+
   if (video) {
     if (typeof video === 'object') { // If it's a movie object
-      console.log(video.movieID); // Log the movieID
+      // Update selectedSchedules
       updatedSchedules[schedulerIndex][slotIndex] = {
         movieID: video.movieID,
         movieName: video.movieName,
         movieURLPartOne: video.movieURLPartOne,
-        movieURLPartTwo: video.movieURLPartTwo
+        movieURLPartTwo: video.movieURLPartTwo,
+      };
+
+      // Update selectedSize with movie size information
+      updatedSizes[schedulerIndex][slotIndex] = {
+        movieURLPartOneSize: video.movieURLPartOneSize,
+        movieURLPartTwoSize: video.movieURLPartTwoSize
       };
     } else { // If it's an ad video link
-      // Try to find the movie with the given movieURLPartOne
-      const movie = videos.find(movie => movie.movieURLPartOne === video);
-      if (movie) {
-        setselectetMovie(movie.movieID); // Set the movieID if found
+      // Try to find the ad with the given adVideoLink
+      const ad = videos.find(ad => ad.adVideoLink === video);
+      if (ad) {
         updatedSchedules[schedulerIndex][slotIndex] = video;
+        
+        // Update selectedSize with ad size information
+        updatedSizes[schedulerIndex][slotIndex] = {
+          FileSize: ad.adFileSize
+        };
       } else {
-        console.log("Movie not found with the provided URL.");
-        // Pass the video URL as is
-        updatedSchedules[schedulerIndex][slotIndex] = video;
+        // Try to find the movie with the given movieURLPartOne
+        const movie = videos.find(movie => movie.movieURLPartOne === video);
+        if (movie) {
+          updatedSchedules[schedulerIndex][slotIndex] = video;
+          
+          // Update selectedSize with movie size information
+          updatedSizes[schedulerIndex][slotIndex] = {
+            movieURLPartOneSize: movie.movieURLPartOneSize,
+          };
+        } else {
+          const movie2 = videos.find(movie2 => movie2.movieURLPartTwo === video);
+          if (movie) {
+            updatedSchedules[schedulerIndex][slotIndex] = video;
+            
+            // Update selectedSize with movie size information
+            
+            updatedSizes[schedulerIndex][slotIndex] = {
+              movieURLPartTwoSize: movie2.movieURLPartTwoSize
+            };
+          } else {
+            
+            console.log("Video not found with the provided URL.");
+            // Pass the video URL as is
+            updatedSchedules[schedulerIndex][slotIndex] = video;
+            // You might need to handle the size for ad videos differently if it's not available in the advertisement object
+            // For now, let's leave it as an empty object
+            updatedSizes[schedulerIndex][slotIndex] = {};
+          }
+        }
       }
     }
   } else {
     updatedSchedules[schedulerIndex][slotIndex] = '';
+    updatedSizes[schedulerIndex][slotIndex] = {}; // Set an empty object for empty slots
   }
-  setSelectedSchedules(updatedSchedules);
+
+  setSelectedSchedules(updatedSchedules); // Update selectedSchedules
+  setSelectedSize(updatedSizes); // Update selectedSize
 };
 
+
 console.log(selectedSchedules);
+console.log(selectedsize);
+
+
 
   const getTotalDuration = (schedulerIndex) => {
     return selectedSchedules[0].reduce((totalDuration, videoID) => {
@@ -201,17 +251,20 @@ console.log(selectedSchedules);
   return formattedTime;
 }
 
+console.log(selectedSchedules)
+
 // Inside handleSaveClick function
 const handleSaveClick = async (schedulerIndex) => {
+
+  // Prepare data for saving
   const schedulerData = {
     theatre_id: selectedTheater,
     premiereDate: startDates[schedulerIndex].toISOString().slice(0, 19).replace('T', ' '), // Convert to MySQL datetime format
     slot_index: schedulerIndex + 1,
     screen_id: selectedScreen,
     advertisementIDList: "1,2,3",
-    movie_id: selectetmovie,  // Assign the movieID to movie_id
+    movie_id: selectetmovie,
     premiereTime: convertTimeToHHMMSS(selectedShowtime),
-    
     video_links: selectedSchedules[0].map((videoLink, index) => {
       if (typeof videoLink === 'object') {
         // If it's a movie object, construct the movie data
@@ -224,10 +277,23 @@ const handleSaveClick = async (schedulerIndex) => {
         return { Videolink: videoLink };
       }
     }),
+    // Add adFileSize and movie size information for each video
+    sizes_of_video: selectedsize[0].map((size, index) => {
+      if (typeof size === 'object') {
+        // If it's a movie object, set movie size information
+        return { 
+          moviePartOneSize: size.movieURLPartOneSize,
+          moviePartTwoSize: size.movieURLPartTwoSize
+        };
+      } else {
+        // If it's an ad video link, set adFileSize based on your logic
+        // For example, you can set a default size or fetch it from somewhere else
+        return { adFileSize: size.adFileSize};
+      }
+    })
   };
 
-  console.log(schedulerData);
-
+  // Send POST request to save scheduler data
   try {
     const response = await fetch(`${apiUrl}/saveSchedulerData`, {
       method: 'POST',
@@ -247,6 +313,8 @@ const handleSaveClick = async (schedulerIndex) => {
   }
 };
 
+
+// console.log(schedulerData)
 
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
