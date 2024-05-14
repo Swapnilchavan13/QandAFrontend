@@ -115,8 +115,9 @@ font-size: 16px;
 }
 
 .checkbox-input {
-margin-right: 5px;
+position: absolute;
 cursor: pointer;
+margin-left: -20%;
 }
 
 /* Style for unchecked state */

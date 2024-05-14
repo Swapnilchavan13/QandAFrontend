@@ -34,7 +34,7 @@ const Scheduler = () => {
   useEffect(() => {
     if (selectedTheater) {
       // Fetch screen details for the selected theater
-      fetch(`http://192.168.0.132:8012/getScreenDetails/${selectedTheater}`)
+      fetch(`http://192.168.0.134:8012/getScreenDetails/${selectedTheater}`)
         .then(response => response.json())
         .then(data => {
           console.log("screen" + data);
@@ -267,6 +267,9 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     return newDateString;
 }
 
+
+console.log(theatreandscreen)
+
   // Filter theatreandscreen data based on the selected date
   const selectedDateData = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex]);
   const movieDataForDate = selectedDateData ? selectedDateData.movieData : null;
@@ -283,7 +286,10 @@ const renderDropdowns = (startDate, schedulerIndex) => {
 
     const convertedDateString = convertDateFormat(slotDate.toDateString());
 
+
 console.log(selectedShowtime); 
+console.log(convertedDateString); 
+
 
 
 
@@ -333,6 +339,15 @@ console.log(selectedShowtime);
 
   const renderSchedulers = () => {
 
+    function convertDate(dateString) {
+      const date = new Date(dateString);
+      const month = date.getMonth() + 1; // Adding 1 because months are zero-indexed
+      const day = date.getDate();
+      const year = date.getFullYear();
+      
+      return `${month}/${day}/${year}`;
+  }
+
     function convertDateFormat(dateString) {
       // Parse the original date string
       const originalDate = new Date(dateString);
@@ -356,10 +371,13 @@ console.log(selectedShowtime);
       return theatreandscreen.map((theatreAndScreenData, index) => {
         const startDate = new Date(theatreAndScreenData.date);
         const convertedDateString = convertDateFormat(startDate.toDateString());
+        const converted = convertDate(selectedDate.undefined);
 
+
+        // console.log(converted, convertedDateString)
 
   
-        if (selectedDate.undefined === convertedDateString) {
+        if (converted === convertedDateString) {
           return (
             <div key={index} className="scheduler-container">
               <h2>{`Slot ${index + 1} - ${startDate.toDateString()}`}</h2>
@@ -398,6 +416,8 @@ console.log(selectedShowtime);
       // Find the movie data for the selected date
       const movieDataForDate = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData;
     
+
+      console.log()
       if (movieDataForDate) {
         // Set the selected showtime to the first showtime available for the selected movie
         setSelectedShowtime(movieDataForDate[selectedMovie][0]);

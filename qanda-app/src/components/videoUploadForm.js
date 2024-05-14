@@ -6,14 +6,22 @@ import config from '../config';  // Adjust the path accordingly
 const apiUrl = `${config.apiBaseUrl}`;
 
 function UploadForm() {
+  const [isQuestionExisting, setQuestionExisting] = useState(false);
   const [formData, setFormData] = useState({
 
     adVideoLink: '',
+    adVideoLinkSize:'',
+    movieURLPartOne: '',
+    movieURLPartTwo: '',
+    movieURLPartOneSize:'',
+    movieURLPartTwoSize: '',
     imageURL: '',
     dateAndTime:'',
     questionType: '',
     videoType:'',
+    isQuestionExists:'',
     questionDescription:'',
+    questionTableID:'',
     questionTypeID: '',
     option: '',
     padx1:'', 
@@ -52,8 +60,10 @@ function UploadForm() {
     optionFive:'',
     adStartTime:'',
     correctOption:'',
-    brandName:'',
+    brandIDForm:'',
     isSample: '',
+    movieName:'',
+    sampleID:'',
     // brandLogo:'',
     // contactPersonName:'',
     // contactPersonNumber:''
@@ -67,9 +77,53 @@ function UploadForm() {
     }));
   };
 
-  const [isQuestionExisting, setQuestionExisting] = useState(false);
-   const handleQuestionChange = () => {
-    setQuestionExisting(!isQuestionExisting);
+  const handleSampleDetailsChange = (e) => {
+    const sampleDetails = e.target.value;
+    setFormData({
+      ...formData,
+      sampleID: sampleDetails,
+    })};
+
+ 
+  //  const handleQuestionChange = (e) => {
+  //   const newValue = e.target.checked;
+  //   if(e.target.value == "existingQuestion"){
+  //     setQuestionExisting(!newValue);
+  //   }
+  //   else if(e.target.value == "newQuestion"){
+  //     setQuestionExisting(newValue);
+  //   }
+  //   console.log(isQuestionExisting, e.target.value)
+  //   //setQuestionExisting(!isQuestionExisting);
+  //    setFormData({
+  //          ...formData,
+  //          isQuestionExists: newValue,
+  //        });
+
+  //       console.log(isQuestionExisting, formData);
+
+  // };
+
+  const handleQuestionChange = (e) => {
+    const newValue = e.target.checked;
+    const checkboxValue = e.target.value;
+  
+    // Update the state based on the value of the checkbox
+    if (checkboxValue === "newQuestion") {
+      setQuestionExisting(false);
+      setFormData({
+        ...formData,
+        isQuestionExists: false,
+      });
+    } else if (checkboxValue === "existingQuestion") {
+      setQuestionExisting(true);
+      setFormData({
+        ...formData,
+        isQuestionExists: true,
+      });
+      
+    }
+    console.log(isQuestionExisting,formData);
   };
 
   const [questionDetails, setQuestionDetails] = useState([]);
@@ -94,12 +148,25 @@ function UploadForm() {
         setBrandDetails(results.brandDetails);
       })
       .catch(error => {
-        console.error('Error fetching videos:', error);
+        console.error('Error fetching brand details:', error);
       });
     },[]);
 
+    const [movieDetails,setMovieDetails] = useState([]);
+    useEffect(() => {
+      fetch(`${apiUrl}/getMovieDetails`)
+        .then(response => response.json())
+        .then(results => {
+          setMovieDetails(results.movieData);
+        })
+        .catch(error => {
+          console.error('Error fetching movie details:', error);
+        });
+      },[]);
+
   const [numOptions, setNumOptions] = useState(2);
   const [option, setOption] = useState(numOptions);
+
 
   const handleNumOptionsChange = (e) => {
     const selectedNumOptions = parseInt(e.target.value, 10);
@@ -125,10 +192,11 @@ function UploadForm() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   
 
-   const [isBrandExisting, setBrandExisting] = useState(false);
+   const [isBrandExisting, setBrandExisting] = useState(true);
    const handleCheckboxChange = () => {
      setBrandExisting(!isBrandExisting);
    };
+   
 
   const handleQuestionTypeIDChange = (e) => {
     const selectedQuestionTypeID = e.target.value;
@@ -170,12 +238,14 @@ function UploadForm() {
   const handleChange = (e) => {
     // setOption(parseInt(e.target.value));
     const { name, value } = e.target;
-  
+    console.log("handle change: ",name,value)
     // For all fields except contactPersonNumber, simply update the state
     setFormData({
       ...formData,
       [name]: value,
     });
+
+    console.log(isQuestionExisting,formData)
   };
   
 
@@ -183,9 +253,65 @@ function UploadForm() {
     setFormData({ ...formData, [key]: value });
   };
 
-  const handleVideoChange = (e) => {
+  const handleVideoChange = async (e) => {
+    const myArray = e.target.value.split("\\");
+    setFormData({ ...formData, 'adVideoLink': myArray[2] });//, 'adVideoLinkSize': fileSize});
+    console.log("myArray[2]",myArray[2])
+    try {
+      const fileSize = await calculateFileSize(myArray[2]);
+      console.log("file size",fileSize, e.target.value)
+      if (fileSize !== null) {
+        handleVideoSizeChange(fileSize,myArray[2]);
+       } else {
+         alert('Unable to calculate file size. Please check your file URL.');
+       }
+    } catch (error) {
+      console.error('Error calculating file size:', error);
+      alert('Error calculating file size. Please check your file URL.');
+    }
+    console.log(myArray[2]);
+    console.log("handleVideoChange", formData);
+  };
+
+
+  const handleVideoSizeChange = (fileSize,fileName) => {
+    setFormData({ ...formData, 'adVideoLink': fileName,'adVideoLinkSize': fileSize});
+  }
+
+  const handlePartOneURLChange = async (e) => {
     const myArray = ( e.target.value).split("\\");
-    setFormData({ ...formData, 'adVideoLink' :  myArray[2]});
+    setFormData({ ...formData, 'movieURLPartOne' :  myArray[2]});
+    try {
+      const fileSize = await calculateFileSize(myArray[2]);
+      console.log("file size",fileSize, e.target.value)
+      if (fileSize !== null) {
+        setFormData({ ...formData, 'movieURLPartOne' :  myArray[2], 'movieURLPartOneSize': fileSize});
+       } else {
+         alert('Unable to calculate file size. Please check your file URL.');
+       }
+    } catch (error) {
+      console.error('Error calculating file size:', error);
+      alert('Error calculating file size. Please check your file URL.');
+    }
+    console.log("part 1one",myArray[2]);
+    console.log(formData)
+  }
+
+  const handlePartTwoURLChange = async (e) => {
+    const myArray = ( e.target.value).split("\\");
+    setFormData({ ...formData, 'movieURLPartTwo' :  myArray[2]});
+    try {
+      const fileSize = await calculateFileSize(myArray[2]);
+      console.log("file size",fileSize, e.target.value)
+      if (fileSize !== null) {
+        setFormData({ ...formData, 'movieURLPartTwo' :  myArray[2], 'movieURLPartTwoSize': fileSize});
+       } else {
+         alert('Unable to calculate file size. Please check your file URL.');
+       }
+    } catch (error) {
+      console.error('Error calculating file size:', error);
+      alert('Error calculating file size. Please check your file URL.');
+    }
     console.log(myArray[2]);
     console.log(formData)
   }
@@ -203,7 +329,7 @@ function UploadForm() {
     console.log("final form data:",formData);
 
     try {
-      const response = await fetch(`http://192.168.0.117:8012/addContentData`, {
+      const response = await fetch(`${apiUrl}/addContentData`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -214,6 +340,64 @@ function UploadForm() {
       if (response.ok) {
         alert('Data saved successfully!');
         // Reset the form fields
+        setFormData({
+          
+    adVideoLink: '',
+    adVideoLinkSize:'',
+    movieURLPartOne: '',
+    movieURLPartTwo: '',
+    movieURLPartOneSize:'',
+    movieURLPartTwoSize: '',
+    imageURL: '',
+    dateAndTime:'',
+    questionType: '',
+    videoType:'',
+    isQuestionExists:'',
+    questionDescription:'',
+    questionTableID:'',
+    questionTypeID: '',
+    option: '',
+    padx1:'', 
+    padx2:'',
+    padx3:'',  
+    padx4:'',
+    padx5:'',
+    pady1:'',
+    pady2:'',
+    pady3:'', 
+    pady4:'', 
+    pady5:'', 
+    padY:'',
+    text1:'',
+    text2:'',
+    text3:'',
+    text4:'',
+    text5:'',
+    x1:'',
+    x2:'',
+    x3:'',
+    x4:'',
+    x5:'',
+    y1:'',
+    y2:'',
+    y3:'',
+    y4:'',
+    y5:'',
+    color:'',
+    colours:'',
+    duration:'',
+    optionOne:'',
+    optionTwo:'',
+    optionThree:'',
+    optionFour:'',
+    optionFive:'',
+    adStartTime:'',
+    correctOption:'',
+    brandIDForm:'',
+    isSample: '',
+    movieName:'',
+    sampleID:'',
+        });
        
       } else {
         console.error('Error uploading data');
@@ -314,48 +498,107 @@ function UploadForm() {
     return fields;
   };
 
+  const calculateFileSize = async (fileUrl) => {
+    try {//live link eg. http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4
+      console.log("calculateFileSize",fileUrl)
+      const response = await fetch(`videos\\${fileUrl}`, { method: 'HEAD' });
+      const contentLength = response.headers.get('Content-Length');
+      if (contentLength) {
+        return parseInt(contentLength);
+      } else {
+        throw new Error('Content-Length header not found in response.');
+      }
+    } catch (error) {
+      console.error('Error calculating file size:', error);
+      return null;
+    }
+  };
+   
+
 
   return (
     <form className="video-form" onSubmit={handleSubmit}>
-      <h1>Add Video Data</h1>
-      <label>
-  <span>Video URL:</span>
-  <div className="custom-file-input">
-    <input type="file" accept="video/mp4" onChange={handleVideoChange} />
-    Choose a MP4 File
-  </div>
-  <span className="file-name">{formData.adVideoLink}</span>
-</label>
 
-<label>
-  <span>Image URL:</span>
-  <div className="custom-file-input">
-    <input type="file" accept="image/*" onChange={handleImageChange} />
-    Choose an Image File
-  </div>
-  <span className="file-name">{formData.imageURL}</span>
-</label>
-    
-      <label>
-        Date:
-        <input type="datetime-local" name="dateAndTime" value={formData.dateAndTime} onChange={handleChange} />
-      </label>
-     
       <label>
         Video Type:
         <select name="videoType" value={formData.videoType} onChange={handleChange}>
           <option value="" disabled selected>Select the video type</option>
-          <option value="Content">Content</option>
+          <option value="Content">Content ( Movie )</option>
           <option value="Advertisement">Advertisement</option>
         </select>
       </label>
 
+      <label style={{ display: formData.videoType === "Content" ? 'block' : 'none' }}>
+        Choose the movie you want to add the content videos in:
+        <select name="movieName" value={formData.movieName} onChange={handleChange}>
+          <option value="" disabled>Select movie</option>
+          {movieDetails.map(movie => (
+            <option key={movie.movieID} value={movie.movieName}>{movie.movieName}</option>
+          ))}
+        </select>
+      </label>
+         
+
+      <h1>Add Video Data</h1>
+      <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+  <span>Video URL:</span>
+  <div className="custom-file-input">
+    <input type="file" accept="video/*" onChange={handleVideoChange} />
+    Choose a File
+  </div>
+  <span className="file-name"><h4>{formData.adVideoLink}</h4></span>
+</label>
+
+    {/* <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>      <span>Ad Video Size (MB):</span>
+      <input type="text" name="adVideoLinkSize" value={formData.adVideoLinkSize} onChange={handleChange} readOnly/>
+    </label> */}
+
+    <label style={{ display: formData.videoType =="Content" ? 'block' : 'none' }}>      <span>Movie Part One URL:</span>
+      <div className="custom-file-input">
+        <input type="file" accept="video/*" onChange={handlePartOneURLChange} />
+        Enter Movie Part One File
+      </div>
+      <span className="file-name"><h4>{formData.movieURLPartOne}</h4></span>
+    </label>
+
+    <label style={{ display: formData.videoType =="Content" ? 'block' : 'none' }}>      <span>Movie Part Two URL:</span>
+      <div className="custom-file-input">
+        <input type="file" accept="video/*" onChange={handlePartTwoURLChange} />
+        Enter Movie Part Two File
+      </div>
+      <span className="file-name"><h4>{formData.movieURLPartTwo}</h4></span>
+    </label>
+
+    {/* <label style={{ display: formData.videoType =="Content" ? 'block' : 'none' }}> 
+      <div className="custom-file-input">
+        <input type="text" name="movieURLPartOneSize" value={formData.movieURLPartOneSize} onChange={handleChange} readOnly/>
+        Calculated Movie Part One File Size (Bytes):
+      </div>
+    </label> 
+
+    <label style={{ display: formData.videoType =="Content" ? 'block' : 'none' }}> 
+      <div className="custom-file-input">
+      <input type="text" name="movieURLPartTwoSize" value={formData.movieURLPartTwoSize} onChange={handleChange} readOnly/>
+      Calculated Movie Part Two File Size (Bytes):
+      </div>
+    </label>*/}
+     
+    <label style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+  <span>Image URL:</span>
+  <div className="custom-file-input">
+    <input type="file" accept="image/*" onChange={handleImageChange} />
+    Choose a File
+  </div>
+  <span className="file-name">{formData.imageURL}</span>
+</label>
+
+
 <label style={{ display: formData.videoType === "Advertisement" && !isBrandExisting ? 'block' : 'none' }}>
   Brand Name:
-  <select name="brandName" value={formData.brandName} onChange={handleChange}>
+  <select name="brandIDForm" value={formData.brandIDForm} onChange={handleChange}>
     <option value="" disabled>Select brand</option>
     {brandDetails.map(brand => (
-      <option key={brand.id} value={brand.brandName}>{brand.brandName}</option>
+      <option key={brand.id} value={brand.id}>{brand.brandName}</option>
     ))}
   </select>
 </label>
@@ -369,12 +612,13 @@ function UploadForm() {
           </select>
       </label>
 
-      <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
+      {/* <div className="checkbox-container" style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
 
         <h4>Choose Option:</h4><label className={`checkbox-label ${isQuestionExisting ? 'isQuestionExisting' : ''}`}>
     <input
       type="checkbox"
-      checked={isQuestionExisting}
+      checked={!isQuestionExisting}
+      value="newQuestion"
       onChange={handleQuestionChange}
       className="checkbox-input"
 
@@ -384,34 +628,61 @@ function UploadForm() {
   <label className={`checkbox-label ${!isQuestionExisting ? 'isQuestionExisting' : ''}` }>
     <input
       type="checkbox"
-      checked={!isQuestionExisting}
+      checked={isQuestionExisting}
+      value="existingQuestion"
       onChange={handleQuestionChange}
       className="checkbox-input"
       disabled={questionDetails.length<=0 ? 'disabled' : ''}
     />
     Choose From Existing Question
   </label>
-</div>  
+</div>   */}
+
+<div className="checkbox-container" style={{ display: formData.videoType === "Advertisement" ? 'block' : 'none' }}>
+  <h4>Choose Option:</h4>
+  <label className={`checkbox-label ${isQuestionExisting ? 'isQuestionExisting' : ''}`}>
+    <input
+      type="checkbox"
+      checked={!isQuestionExisting}
+      value="newQuestion"
+      onChange={handleQuestionChange}
+      className="checkbox-input"
+    />
+    Add New Question
+  </label> 
+  <label className={`checkbox-label ${isQuestionExisting ? 'isQuestionExisting' : ''}`}>
+    <input
+      type="checkbox"
+      checked={isQuestionExisting==true}
+      value="existingQuestion"
+      onChange={handleQuestionChange}
+      className="checkbox-input"
+      disabled={questionDetails.length <= 0 ? 'disabled' : ''}
+    />
+    Choose From Existing Question
+  </label>
+</div>
+
            
    
       <label disable={true} style={{ display: formData.videoType === "Advertisement" && !isQuestionExisting ? 'block' : 'none' }}>
           Question:
-          <select name="questionDescription" value={formData.questionDescription} onChange={handleChange}>
+          <select name="questionTableID" value={formData.questionTableID} onChange={handleChange}>
             <option value="" disabled>Select Question</option>
             {questionDetails.map(question => (
-              <option key={question.id} value={question.questionDescription}>{question.questionDescription}</option>
+              <option key={question.id} value={question.id}>{question.questionDescription}</option>
             ))}
           </select>
         </label>
 
         <label style={{ display: formData.videoType === "Advertisement" && isQuestionExisting ? 'block' : 'none'}}>
         Enter New Question Here:
-          <input type="text" name="questionDescription" value={formData.durquestionDescriptionation} onChange={handleChange} />
+          <input type="text" name="questionDescription" value={formData.questionDescription} onChange={handleChange} />
       </label>
 
      
       <label>
-      Duration ( in minutes ):
+      Duration ( in seconds ):
         <input type="text" name="duration" value={formData.duration} onChange={handleChange} />
       </label>
     
@@ -427,6 +698,23 @@ function UploadForm() {
     <option value="false">No</option>
   </select>
 </label>
+
+{formData.isSample === "true" && formData.videoType === "Advertisement" && (
+  <div>
+    {/* Show another dropdown here */}
+    <label>
+      Select the Sample Being Displayed in the AD:
+      <select
+        name="anotherDropdown"
+        value={formData.sampleID}>
+        onChange={handleSampleDetailsChange}
+        <option value={0}>Select</option>{/*HARDCODED DROPDOWN DATA FOR NOW*/}
+        <option value={1}>Sugar Cosmetics: Eyeliner</option>
+        <option value={2}>Myntra: T-shirt</option>
+      </select>
+    </label>
+  </div>
+)}
 
 
       <label style={{ display: formData.videoType =="Advertisement" ? 'block' : 'none' }}>
@@ -458,7 +746,7 @@ function UploadForm() {
         />
       </label>
       
-      <label style={{ display: numOptions > 2 ? 'block' : 'none' }}>
+      <label style={{ display: numOptions > 2 && formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Option 3:
         <input
           type="text"
@@ -468,7 +756,7 @@ function UploadForm() {
         />
       </label>
      
-      <label style={{ display: numOptions > 3 ? 'block' : 'none' }}>
+      <label style={{ display: numOptions > 3 && formData.videoType =="Advertisement" ? 'block'   : 'none' }}>
         Option 4:
         <input
           type="text"
@@ -478,7 +766,7 @@ function UploadForm() {
         />
       </label>
       
-      <label style={{ display: numOptions > 4 ? 'block' : 'none' }}>
+      <label style={{ display: numOptions > 4 && formData.videoType =="Advertisement" ? 'block' : 'none' }}>
         Option 5:
         <input
           type="text"
