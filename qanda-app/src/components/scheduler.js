@@ -21,10 +21,6 @@ const Scheduler = () => {
 
   const [selectetmovie, setselectetMovie] = useState('');
 
-  
-  
-
-
   const [movievideo, setMovieVideo] = useState([])
 
   const [screens, setScreens] = useState([]);
@@ -138,8 +134,8 @@ const Scheduler = () => {
 
       // Update selectedSize with movie size information
       updatedSizes[schedulerIndex][slotIndex] = {
-        movieURLPartOneSize: video.movieURLPartOneSize,
-        movieURLPartTwoSize: video.movieURLPartTwoSize
+        size: video.movieURLPartOneSize,
+        size: video.movieURLPartTwoSize
       };
     } else { // If it's an ad video link
       // Try to find the ad with the given adVideoLink
@@ -149,27 +145,29 @@ const Scheduler = () => {
         
         // Update selectedSize with ad size information
         updatedSizes[schedulerIndex][slotIndex] = {
-          FileSize: ad.adFileSize
+           FileSize: ad.adFileSize
         };
       } else {
         // Try to find the movie with the given movieURLPartOne
         const movie = videos.find(movie => movie.movieURLPartOne === video);
         if (movie) {
+           setselectetMovie(movie.movieID); 
           updatedSchedules[schedulerIndex][slotIndex] = video;
           
           // Update selectedSize with movie size information
           updatedSizes[schedulerIndex][slotIndex] = {
-            movieURLPartOneSize: movie.movieURLPartOneSize,
+             size: movie.movieURLPartOneSize,
           };
         } else {
           const movie2 = videos.find(movie2 => movie2.movieURLPartTwo === video);
-          if (movie) {
+          if (movie2) {
             updatedSchedules[schedulerIndex][slotIndex] = video;
             
+
             // Update selectedSize with movie size information
             
             updatedSizes[schedulerIndex][slotIndex] = {
-              movieURLPartTwoSize: movie2.movieURLPartTwoSize
+               size2: movie2.movieURLPartTwoSize
             };
           } else {
             
@@ -256,6 +254,7 @@ console.log(selectedSchedules)
 // Inside handleSaveClick function
 const handleSaveClick = async (schedulerIndex) => {
 
+  
   // Prepare data for saving
   const schedulerData = {
     theatre_id: selectedTheater,
@@ -279,19 +278,22 @@ const handleSaveClick = async (schedulerIndex) => {
     }),
     // Add adFileSize and movie size information for each video
     sizes_of_video: selectedsize[0].map((size, index) => {
-      if (typeof size === 'object') {
+      if (typeof size == 'object') {
         // If it's a movie object, set movie size information
         return { 
-          moviePartOneSize: size.movieURLPartOneSize,
-          moviePartTwoSize: size.movieURLPartTwoSize
+          MovieOnesize: size.size,
+          MovieTwosize: size.size2,
+          size: size.FileSize
         };
       } else {
         // If it's an ad video link, set adFileSize based on your logic
         // For example, you can set a default size or fetch it from somewhere else
-        return { adFileSize: size.adFileSize};
+        return { FileSize: size.adFileSize};
       }
     })
   };
+
+  console.log(schedulerData)
 
   // Send POST request to save scheduler data
   try {
@@ -311,10 +313,8 @@ const handleSaveClick = async (schedulerIndex) => {
   } catch (error) {
     console.error('Error saving data:', error);
   }
+  
 };
-
-
-// console.log(schedulerData)
 
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
