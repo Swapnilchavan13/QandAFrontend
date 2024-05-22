@@ -63,26 +63,29 @@ const Scheduler = () => {
   }, []);
 
 
-  useEffect(() => {
-    if (selectedTheater && selectedScreen ) { // Ensure selectedDate is not empty
-      const url = `http://62.72.59.146:3005/allocatedatafill?theatreId=${selectedTheater}&selectedscreen=${selectedScreen}&date=${selectedDate[0]}`;
-  
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          console.log("Data for selected theater, screen, and date:", data);
-          if (data && (Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0)) {
-            setThatreandScreen(data);
-          } else {
-            setThatreandScreen("No data found");
-          }
-          // You can process the data further if needed
-        })
-        .catch(error => {
-          console.error('Error fetching allocated data:', error);
-        });
-    }
-  }, [selectedTheater, selectedScreen]); // Include selectedDate in the dependency array
+  // Inside useEffect for fetching allocated data
+useEffect(() => {
+  if (selectedTheater && selectedScreen && selectedDate) {
+    const url = `http://62.72.59.146:3005/allocatedatafill?theatreId=${selectedTheater}&selectedscreen=${selectedScreen}&date=${selectedDate}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setThatreandScreen(data);
+        } else {
+          console.error('Data format error:', data);
+          setThatreandScreen([]); // Reset theatreandscreen to an empty array
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching allocated data:', error);
+        setThatreandScreen([]); // Reset theatreandscreen to an empty array
+      });
+  } else {
+    setThatreandScreen([]); // Reset theatreandscreen to an empty array if any of the dependencies is missing
+  }
+}, [selectedTheater, selectedScreen, selectedDate]);
+
 
 
   console.log(theatreandscreen)
@@ -277,14 +280,15 @@ const handleSaveClick = async (schedulerIndex) => {
       }
     }),
     // Add adFileSize and movie size information for each video
-    sizes_of_video: selectedsize[0].map((size, index) => {
-      if (typeof size == 'object') {
-        // If it's a movie object, set movie size information
-        return { 
-          MovieOnesize: size.size,
-          MovieTwosize: size.size2,
-          size: size.FileSize
-        };
+   sizes_of_video: selectedsize[0].map((size, index) => {
+  if (typeof size == 'object') {
+    // If it's a movie object, set movie size information
+    let dynamicKey = `size_${index + 1}`; // Generating dynamic key
+    return { 
+      MovieOnesize: size.size,
+      MovieTwosize: size.size2,
+      [dynamicKey]: size.FileSize // Using dynamic key
+    };
       } else {
         // If it's an ad video link, set adFileSize based on your logic
         // For example, you can set a default size or fetch it from somewhere else
@@ -318,8 +322,13 @@ const handleSaveClick = async (schedulerIndex) => {
 
 // Adjust the rendering logic in renderDropdowns function
 const renderDropdowns = (startDate, schedulerIndex) => {
-  const datesFromData = new Set(); // Create a Set to store unique dates
 
+
+  // if (!Array.isArray(theatreandscreen)) {
+  //   return <p>No allocated data available for the selected theater, screen, and date.</p>;
+  // }
+
+  const datesFromData = new Set(); // Create a Set to store unique dates
 
   theatreandscreen.forEach(item => {
     datesFromData.add(item.date);
@@ -348,8 +357,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     
     return newDateString;
 }
-
-
   // Filter theatreandscreen data based on the selected date
   const selectedDateData = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex]);
   const movieDataForDate = selectedDateData ? selectedDateData.movieData : null;
@@ -366,7 +373,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     
     const convertedDateString = convertDateFormat(slotDate.toDateString());
     const converted = convertDate(selectedDate.undefined);
-
 
     if (converted === convertedDateString) {
       return (
@@ -408,13 +414,9 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     }
   });
 };
-
-
-  // console.log(selectedSchedules)
  
 
   const renderSchedulers = () => {
-
 
     function convertDate(dateString) {
       const date = new Date(dateString);
@@ -444,8 +446,22 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     if (videos.length === 0) {
       return (
         <h1>No data added in the slot page.</h1>
-      );
+      )
+    }
+    else {
+      if(selectedScreen==''){
+        return (
+          <h1>Please select Screen from the above dropdown</h1>
+        );
+      
     } else {
+      if(theatreandscreen.length < 1){
+        return (
+          <h1>No allocated data available for the selected theater and screen.</h1>
+        );
+      
+    }
+     else {
       return theatreandscreen.map((theatreAndScreenData, index) => {
         const startDate = new Date(theatreAndScreenData.date);
         const convertedDateString = convertDateFormat(startDate.toDateString());
@@ -454,7 +470,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
 
         // console.log(converted, convertedDateString)
 
-  
         if (converted === convertedDateString) {
           return (
             <div key={index} className="scheduler-container">
@@ -475,11 +490,11 @@ const renderDropdowns = (startDate, schedulerIndex) => {
         }
       });
     }
+  }
+  }
   };
   
   
-
-
   const renderDropdown = (schedulerIndex) => {
 
     const datesFromData = new Set();
@@ -494,8 +509,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
       // Find the movie data for the selected date
       const movieDataForDate = theatreandscreen.find(item => item.date === selectedDate[schedulerIndex])?.movieData;
     
-
-      console.log()
       if (movieDataForDate) {
         // Set the selected showtime to the first showtime available for the selected movie
         setSelectedShowtime(movieDataForDate[selectedMovie][0]);
@@ -590,21 +603,9 @@ const renderDropdowns = (startDate, schedulerIndex) => {
     </select>
   </div>
 )}
-
           </>
         )}
-        {/* <label>Number of Slots:</label>
-        <select
-          className='selecttag'
-          value={schedulerCount}
-          onChange={(e) => setSchedulerCount(parseInt(e.target.value, 10))}
-        >
-          {[3, 7, 15, 30].map((count) => (
-            <option key={count} value={count}>
-              {count}
-            </option>
-          ))}
-        </select> */}
+     
       </div>
     );
   };

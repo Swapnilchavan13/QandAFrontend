@@ -177,7 +177,7 @@ export const VideoPlayer = () => {
             onTimeUpdate={handleTimeUpdate}
             // ref={videoRef}
           >
-            <source src={`http://192.168.0.118:3001/${videoLinks[currentIndex]}`} type="video/mp4" />
+            <source src={`http://192.168.0.134:3000/${videoLinks[currentIndex]}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <h1>{videoID} {adStartSeconds}</h1>
