@@ -467,7 +467,6 @@ const renderDropdowns = (startDate, schedulerIndex) => {
         const convertedDateString = convertDateFormat(startDate.toDateString());
         const converted = convertDate(selectedDate.undefined);
 
-
         // console.log(converted, convertedDateString)
 
         if (converted === convertedDateString) {
